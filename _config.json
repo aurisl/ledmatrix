@@ -1,0 +1,11 @@
+{
+   "widget-weather" : {
+      "api-token" : "",
+      "city" : ""
+   },
+   "widget-location" : {
+     "google-maps-token" : "",
+     "stationary-location-gps-coordinates" : "",
+     "location-provider-url": ""
+   }
+}
