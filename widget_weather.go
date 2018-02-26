@@ -1,31 +1,31 @@
 package main
 
 import (
-	"image/color"
-	"path/filepath"
-	"os"
-	"image"
-	"net/http"
-	"io/ioutil"
 	"bytes"
-	"github.com/nfnt/resize"
-	"image/png"
-	"strconv"
-	"github.com/fogleman/gg"
-	"time"
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"fmt"
+	"github.com/fogleman/gg"
+	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	"github.com/nfnt/resize"
+	"image"
+	"image/color"
+	"image/png"
 	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 )
 
 var (
 	WeatherProvider = NewWeather()
 	lastUpdate      time.Time
-	displayTick         = false
-	loopTick            = 0
-	radianTick          = 0
-	back                = false
-	mainLoop            = time.Second * 1
+	displayTick     = false
+	loopTick        = 0
+	radianTick      = 0
+	back            = false
+	mainLoop        = time.Second * 1
 )
 
 type WeatherAnimation struct {

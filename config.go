@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
-	"errors"
 	"encoding/json"
+	"errors"
+	"os"
 	"path/filepath"
 )
 
@@ -27,7 +27,8 @@ type (
 
 func NewConfig() *WidgetConfig {
 
-	configFile, err := os.Open(filepath.Dir("config.json"))
+	workingDir, _ := filepath.Abs(filepath.Dir("."))
+	configFile, err := os.Open(workingDir + "/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())
@@ -35,7 +36,7 @@ func NewConfig() *WidgetConfig {
 	decoder := json.NewDecoder(configFile)
 
 	widgetConfig := &WidgetConfig{}
-	err = decoder.Decode(&widgetConfig)
+	err = decoder.Decode(widgetConfig)
 	if err != nil {
 		errors.New("Error decoding configuration: " + err.Error())
 	}

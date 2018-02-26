@@ -1,12 +1,12 @@
 package main
 
 import (
+	"errors"
 	"github.com/fogleman/gg"
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
-	"time"
-	"errors"
 	"image/color"
+	"time"
 )
 
 type FireAnimation struct {

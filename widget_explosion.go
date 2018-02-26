@@ -1,12 +1,12 @@
 package main
 
 import (
-	"image/color"
-	"time"
-	"image"
 	"github.com/fogleman/gg"
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	"image"
+	"image/color"
 	"io"
+	"time"
 )
 
 var (
