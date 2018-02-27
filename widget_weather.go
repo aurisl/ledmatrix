@@ -47,7 +47,6 @@ func DrawWeatherWidget(toolkit *rgbmatrix.ToolKit, close chan bool, config Widge
 	}
 
 	toolkit.PlayAnimation(animation)
-
 }
 
 func (animation *WeatherAnimation) Next() (image.Image, <-chan time.Time, error) {
@@ -67,7 +66,6 @@ func (animation *WeatherAnimation) Next() (image.Image, <-chan time.Time, error)
 		animation.ctx.SetRGB(0, 0, 0)
 		animation.ctx.Clear()
 	} else if minute == "00" && second < 5 {
-
 		mainLoop = time.Microsecond * 20
 		drawHourBang(animation)
 
@@ -105,10 +103,9 @@ func drawWeatherInformation(animation *WeatherAnimation) {
 		return
 	}
 
-	if loopTick == 3 {
+	if loopTick >= 3 && loopTick <= 6 {
 
-		loopTick = 0
-
+		loopTick++
 		icon := weatherData.WeatherCurrent[0].Icon
 
 		if icon == WeatherProvider.WeatherImage.Ico {
@@ -157,7 +154,13 @@ func drawWeatherInformation(animation *WeatherAnimation) {
 		animation.ctx.DrawImage(img, 5, 13)
 
 		return
+	}
 
+	if loopTick >= 6 {
+       done := DrawText(weatherData.WeatherCurrent[0].Description, 13, animation.ctx)
+       if done {
+       	 loopTick = 0
+	   }
 	}
 
 	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
