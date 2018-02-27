@@ -7,6 +7,7 @@ import (
 	"time"
 	"errors"
 	"image/color"
+	"io"
 )
 
 type FireAnimation struct {
@@ -62,7 +63,7 @@ func (animation *FireAnimation) Next() (image.Image, <-chan time.Time, error) {
 
 	select {
 	case <-animation.close:
-		return nil, nil, errors.New("EOF")
+		return nil, nil, io.EOF
 	default:
 		return animation.ctx.Image(), time.After(time.Millisecond * 500), nil
 	}
