@@ -4,10 +4,9 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
-	"time"
-	"errors"
 	"image/color"
 	"io"
+	"time"
 )
 
 type FireAnimation struct {

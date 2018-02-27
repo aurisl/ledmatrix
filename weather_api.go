@@ -1,17 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"os"
-	"path/filepath"
+	"fmt"
+	"image"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
-	"bytes"
-	"fmt"
-	"io"
-	"image"
 )
 
 type (
@@ -48,7 +48,7 @@ type (
 )
 
 var (
-	weatherFileName = "/weather.json"
+	weatherFileName    = "/weather.json"
 	weatherApiEndpoint = "http://api.openweathermap.org/data/2.5/weather"
 )
 

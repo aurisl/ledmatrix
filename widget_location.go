@@ -1,17 +1,17 @@
 package main
 
 import (
-	"time"
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
-	"net/http"
-	"fmt"
-	"io/ioutil"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/fogleman/gg"
-	"image/color"
+	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
+	"image/color"
 	"io"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 type (

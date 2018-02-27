@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
 	"html"
+	"net/http"
 )
 
 func StartHttpServer(widget *Widget, terminateCurrentRunning chan bool) {

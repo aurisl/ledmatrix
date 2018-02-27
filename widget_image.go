@@ -1,19 +1,19 @@
 package main
 
 import (
-	"time"
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"net/http"
 	"strconv"
+	"time"
 )
 
-func DrawGif (toolkit *rgbmatrix.ToolKit, widget *Widget, close chan bool) {
+func DrawGif(toolkit *rgbmatrix.ToolKit, widget *Widget, close chan bool) {
 
 	imgUrl := widget.params.Get("url")
 	response, err := http.Get(imgUrl)
 	if err != nil {
 		widget.name = ""
-       return
+		return
 	}
 
 	closed, err := toolkit.PlayGIF(response.Body)
@@ -26,12 +26,12 @@ func DrawGif (toolkit *rgbmatrix.ToolKit, widget *Widget, close chan bool) {
 	if animationDuration != "" {
 		if animationDuration == "-1" {
 			select {
-					case <-close:
-						widget.name = ""
+			case <-close:
+				widget.name = ""
 			}
 		}
 
-		d,_ := strconv.ParseInt(animationDuration, 10, 32)
+		d, _ := strconv.ParseInt(animationDuration, 10, 32)
 		time.Sleep(time.Second * time.Duration(d))
 	} else {
 		time.Sleep(time.Second * 10)
