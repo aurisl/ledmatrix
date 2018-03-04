@@ -1,4 +1,4 @@
-package main
+package draw
 
 import (
 	"github.com/fogleman/gg"

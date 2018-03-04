@@ -1,12 +1,13 @@
-package main
+package explosion
 
 import (
 	"github.com/fogleman/gg"
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
 	"image/color"
 	"io"
 	"time"
+	"github.com/aurisl/ledmatrix/command"
+	"github.com/aurisl/ledmatrix/matrix"
 )
 
 var (
@@ -14,24 +15,24 @@ var (
 	numberOfLoops = 0
 )
 
-type ExplosionAnimation struct {
-	ctx    *gg.Context
-	close  chan bool
-	widget *Widget
+type animation struct {
+	ctx           *gg.Context
+	close         chan bool
+	widgetCommand *command.WidgetCommand
 }
 
-func DrawExplosion(toolkit *rgbmatrix.ToolKit, close chan bool, widget *Widget) {
+func Draw(toolkit *matrix.Toolkit, close chan bool, widget *command.WidgetCommand) {
 
-	animation := &ExplosionAnimation{
-		ctx:    gg.NewContext(32, 32),
-		close:  close,
-		widget: widget,
+	animation := &animation{
+		ctx:           toolkit.Ctx,
+		close:         close,
+		widgetCommand: widget,
 	}
 
-	toolkit.PlayAnimation(animation)
+	toolkit.MatrixToolkit.PlayAnimation(animation)
 }
 
-func (animation *ExplosionAnimation) Next() (image.Image, <-chan time.Time, error) {
+func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 	explosion(animation)
 
@@ -41,7 +42,7 @@ func (animation *ExplosionAnimation) Next() (image.Image, <-chan time.Time, erro
 	default:
 		if numberOfLoops == 10 {
 			numberOfLoops = 0
-			animation.widget.name = ""
+			animation.widgetCommand.Name = ""
 			return nil, nil, io.EOF
 		}
 
@@ -49,7 +50,7 @@ func (animation *ExplosionAnimation) Next() (image.Image, <-chan time.Time, erro
 	}
 }
 
-func explosion(animation *ExplosionAnimation) {
+func explosion(animation *animation) {
 
 	x := 15
 	y := 15

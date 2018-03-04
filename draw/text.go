@@ -1,4 +1,4 @@
-package main
+package draw
 
 import (
 	"github.com/fogleman/gg"
@@ -70,17 +70,15 @@ var characterPixelSize = map[string]int{
 	"%":  3,
 }
 
-var textPosition = 35.0 //35 is out of bounds
+var textPosition = 35.0
+var fontLoaded = false
 
-func DrawScrollingText(text string, y float64, ctx *gg.Context) bool {
+func TextScrolling(text string, y float64, ctx *gg.Context) bool {
+
+	loadFontFace(ctx)
 
 	text = strings.ToUpper(text)
-
-	if err := ctx.LoadFontFace("resources/fonts/PixelOperator.ttf", 16); err != nil {
-		panic(err)
-	}
-
-	totalPixels := CountWordPixels(text)
+	totalPixels := countWordPixels(text)
 
 	ctx.SetRGB(0, 0, 0)
 	ctx.SetColor(color.RGBA{255, 255, 0, 255})
@@ -94,19 +92,31 @@ func DrawScrollingText(text string, y float64, ctx *gg.Context) bool {
 	return false
 }
 
-func DrawText(text string, x float64, y float64, ctx *gg.Context, color color.RGBA) {
-	text = strings.ToUpper(text)
+func Text(text string, x float64, y float64, ctx *gg.Context, color color.RGBA) {
 
-	if err := ctx.LoadFontFace("resources/fonts/PixelOperator.ttf", 16); err != nil {
-		panic(err)
-	}
+	loadFontFace(ctx)
+
+	text = strings.ToUpper(text)
 
 	ctx.SetRGB(0, 0, 0)
 	ctx.SetColor(color)
 	ctx.DrawString(text, x, y)
 }
 
-func CountWordPixels(text string) int {
+func loadFontFace(ctx *gg.Context) {
+
+	if fontLoaded == true {
+		return
+	}
+
+	if err := ctx.LoadFontFace("resources/fonts/PixelOperator.ttf", 16); err != nil {
+		panic(err)
+	}
+
+	fontLoaded = true
+}
+
+func countWordPixels(text string) int {
 
 	var totalPixels = 0
 	for _, char := range text {

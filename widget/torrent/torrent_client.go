@@ -1,4 +1,4 @@
-package main
+package torrent
 
 import (
 	"encoding/json"
@@ -21,12 +21,12 @@ type (
 		url       string
 	}
 
-	TorrentList struct {
-		Build    int            `json:"build"`
-		Torrents []TorrentEntry `json:"torrents"`
+	List struct {
+		Build    int     `json:"build"`
+		Torrents []Entry `json:"torrents"`
 	}
 
-	TorrentEntry struct {
+	Entry struct {
 		Hash          string
 		Status        int
 		Name          string
@@ -43,7 +43,7 @@ type (
 	}
 )
 
-func (entry *TorrentEntry) UnmarshalJSON(data []byte) error {
+func (entry *Entry) UnmarshalJSON(data []byte) error {
 	var v []interface{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		fmt.Printf("Error whilde decoding %v\n", err)
@@ -82,7 +82,7 @@ func NewUTorrentClient(url string, username string, password string) (*UTorrent,
 	return UTorrent, nil
 }
 
-func (UTorrent *UTorrent) getList() (*TorrentList, error) {
+func (UTorrent *UTorrent) getList() (*List, error) {
 
 	body := UTorrent.makeRequest("", "GET")
 
@@ -90,7 +90,7 @@ func (UTorrent *UTorrent) getList() (*TorrentList, error) {
 		return nil, errors.New("empty body response")
 	}
 
-	torrentList := &TorrentList{}
+	torrentList := &List{}
 	err := json.Unmarshal(body, torrentList)
 
 	if err != nil {

@@ -1,4 +1,7 @@
 {
+   "general" : {
+     "resources-dir" : ""
+   },
    "widget-weather" : {
       "api-token" : "",
       "city" : ""

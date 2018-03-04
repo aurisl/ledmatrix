@@ -1,38 +1,41 @@
-package main
+package location
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/fogleman/gg"
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
 	"image/color"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/command"
+	"github.com/aurisl/ledmatrix/draw"
+	"github.com/aurisl/ledmatrix/matrix"
 )
 
 type (
 	Location struct {
-		Rows []LocationElements `json:"rows" bson:"rows"`
+		Rows []Elements `json:"rows" bson:"rows"`
 	}
 
-	LocationElements struct {
-		LocationElement []LocationElement `json:"elements" bson:"elements"`
+	Elements struct {
+		LocationElement []Element `json:"elements" bson:"elements"`
 	}
 
-	LocationElement struct {
-		LocationDistance LocationDistance `json:"distance" bson:"distance"`
-		Status           string           `json:"status" bson:"status"`
+	Element struct {
+		LocationDistance Distance `json:"distance" bson:"distance"`
+		Status           string   `json:"status" bson:"status"`
 	}
 
-	LocationDistance struct {
+	Distance struct {
 		Range string `json:"text" bson:"text"`
 	}
 
-	LocationCord struct {
+	Coordinates struct {
 		Lon string `json:"lon" bson:"lon"`
 		Lat string `json:"lat" bson:"lat"`
 	}
@@ -44,30 +47,30 @@ var (
 	googleMapsApiEndpoint = "https://maps.googleapis.com/maps/api/distancematrix/json"
 )
 
-type LocationAnimation struct {
+type animation struct {
 	ctx    *gg.Context
 	close  chan bool
-	config WidgetLocationConfig
+	config config.WidgetLocation
 }
 
-func DisplayDistance(toolkit *rgbmatrix.ToolKit, widget *Widget, close chan bool, config WidgetLocationConfig) {
+func Draw(toolkit *matrix.Toolkit,
+	close chan bool,
+	widgetCommand *command.WidgetCommand,
+	locationConfig config.WidgetLocation) {
 
-	animation := &LocationAnimation{
+	animation := &animation{
 		ctx:    gg.NewContext(32, 32),
 		close:  close,
-		config: config,
+		config: locationConfig,
 	}
 
-	toolkit.PlayAnimation(animation)
-	widget.name = ""
+	toolkit.MatrixToolkit.PlayAnimation(animation)
+
+	widgetCommand.Name = ""
 }
 
-func (animation *LocationAnimation) Next() (image.Image, <-chan time.Time, error) {
+func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	initializeLocationCanvas(animation)
-
-	if err := animation.ctx.LoadFontFace("resources/fonts/PixelOperator.ttf", 16); err != nil {
-		panic(err)
-	}
 
 	if tick == 0 {
 		googleResponse := readDistance(animation.config)
@@ -97,13 +100,12 @@ func (animation *LocationAnimation) Next() (image.Image, <-chan time.Time, error
 		}
 	}
 
-	if distance != "" {
-		animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
-		animation.ctx.DrawString(distance, 1, 18)
-	} else {
-		animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
-		animation.ctx.DrawString("n/a", 1, 18)
+	text := distance
+	if distance == "" {
+		text = "n\a"
 	}
+
+	draw.Text(text, 1, 18, animation.ctx, color.RGBA{255, 0, 0, 255})
 
 	tick++
 
@@ -121,7 +123,7 @@ func (animation *LocationAnimation) Next() (image.Image, <-chan time.Time, error
 
 }
 
-func initializeLocationCanvas(animation *LocationAnimation) {
+func initializeLocationCanvas(animation *animation) {
 
 	animation.ctx.SetRGB(0, 0, 0)
 	animation.ctx.Clear()
@@ -130,19 +132,19 @@ func initializeLocationCanvas(animation *LocationAnimation) {
 	animation.ctx.Stroke()
 }
 
-func readDistance(config WidgetLocationConfig) []byte {
+func readDistance(locationConfig config.WidgetLocation) []byte {
 	req, _ := http.NewRequest("GET", googleMapsApiEndpoint, nil)
 
 	q := req.URL.Query()
 	q.Add("units", "metric")
-	q.Add("origins", config.StationaryLocationGpsCoordinates)
+	q.Add("origins", locationConfig.StationaryLocationGpsCoordinates)
 
-	cCord := readGeo(config)
+	cCord := readGeo(locationConfig)
 
 	response := bytes.NewReader(cCord)
 	decoder := json.NewDecoder(response)
 
-	locationCord := LocationCord{}
+	locationCord := Coordinates{}
 
 	err := decoder.Decode(&locationCord)
 	if err != nil {
@@ -151,7 +153,7 @@ func readDistance(config WidgetLocationConfig) []byte {
 	}
 
 	q.Add("destinations", locationCord.Lat+","+locationCord.Lon)
-	q.Add("key", config.GoogleMapsToken)
+	q.Add("key", locationConfig.GoogleMapsToken)
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := http.Get(req.URL.String())
@@ -172,8 +174,8 @@ func readDistance(config WidgetLocationConfig) []byte {
 	return body
 }
 
-func readGeo(config WidgetLocationConfig) []byte {
-	req, _ := http.NewRequest("GET", config.LocationProviderUrl, nil)
+func readGeo(locationConfig config.WidgetLocation) []byte {
+	req, _ := http.NewRequest("GET", locationConfig.LocationProviderUrl, nil)
 
 	resp, err := http.Get(req.URL.String())
 	if err != nil {

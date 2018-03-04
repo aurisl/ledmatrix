@@ -1,4 +1,4 @@
-package main
+package weather
 
 import (
 	"bytes"
@@ -12,28 +12,29 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"github.com/aurisl/ledmatrix/config"
 )
 
 type (
 	Weather struct {
-		LastUpdated  time.Time    `json:"last_updated" bson:"last_updated"`
-		WeatherData  WeatherAPI   `json:"weather_data" bson:"weather_data"`
-		WeatherImage WeatherImage `json:"-"`
+		LastUpdated  time.Time `json:"last_updated" bson:"last_updated"`
+		WeatherData  API       `json:"weather_data" bson:"weather_data"`
+		WeatherImage Image     `json:"-"`
 	}
 
-	WeatherAPI struct {
-		WeatherCurrent []WeatherCurrent `json:"weather" bson:"weather"`
-		WeatherMain    WeatherMain      `json:"main" bson:"main"`
+	API struct {
+		WeatherCurrent []Current `json:"weather" bson:"weather"`
+		WeatherMain    Main      `json:"main" bson:"main"`
 	}
 
-	WeatherCurrent struct {
+	Current struct {
 		Id          uint16 `json:"id" bson:"id"`
 		Main        string `json:"main" bson:"main"`
 		Description string `json:"description" bson:"description"`
 		Icon        string `json:"icon" bson:"icon"`
 	}
 
-	WeatherMain struct {
+	Main struct {
 		Temp     float64 `json:"temp" bson:"temp"`
 		Pressure float64 `json:"pressure" bson:"pressure"`
 		Humidity uint16  `json:"humidity" bson:"humidity"`
@@ -41,7 +42,7 @@ type (
 		TempMax  float64 `json:"temp_max" bson:"temp_max"`
 	}
 
-	WeatherImage struct {
+	Image struct {
 		Img image.Image
 		Ico string
 	}
@@ -56,9 +57,9 @@ func NewWeather() *Weather {
 	return &Weather{}
 }
 
-func (w *Weather) ReadWeather(config WidgetWeatherApiConfig) {
+func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi) {
 
-	workingDirectory, err := filepath.Abs(filepath.Dir(resourcesDir + weatherFileName))
+	workingDirectory, err := filepath.Abs(filepath.Dir("./resources" + weatherFileName))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +68,7 @@ func (w *Weather) ReadWeather(config WidgetWeatherApiConfig) {
 	weatherFile, err := os.Open(weatherFileLocation)
 
 	if err != nil {
-		w.updateWeatherData(weatherFileLocation, config)
+		w.updateWeatherData(weatherFileLocation, weatherConfig)
 		return
 	}
 
@@ -75,16 +76,16 @@ func (w *Weather) ReadWeather(config WidgetWeatherApiConfig) {
 
 	duration := time.Since(w.LastUpdated)
 	if duration.Minutes() > 15 {
-		w.updateWeatherData(weatherFileLocation, config)
+		w.updateWeatherData(weatherFileLocation, weatherConfig)
 	}
 }
 
-func (w *Weather) updateWeatherData(weatherFileLocation string, config WidgetWeatherApiConfig) {
+func (w *Weather) updateWeatherData(weatherFileLocation string, weatherConfig config.WidgetWeatherApi) {
 	fmt.Println("Updating weather data...")
 
-	weatherApi := WeatherAPI{}
+	weatherApi := API{}
 
-	apiResponse := readApi(config)
+	apiResponse := readApi(weatherConfig)
 
 	if apiResponse == nil {
 		return
@@ -116,12 +117,12 @@ func (w *Weather) decodeWeatherJsonFile(weatherFile io.Reader) {
 	}
 }
 
-func readApi(config WidgetWeatherApiConfig) []byte {
+func readApi(weatherConfig config.WidgetWeatherApi) []byte {
 	req, _ := http.NewRequest("GET", weatherApiEndpoint, nil)
 
 	q := req.URL.Query()
-	q.Add("q", config.City)
-	q.Add("appid", config.ApiToken)
+	q.Add("q", weatherConfig.City)
+	q.Add("appid", weatherConfig.ApiToken)
 	q.Add("units", "metric")
 	req.URL.RawQuery = q.Encode()
 
@@ -144,7 +145,7 @@ func readApi(config WidgetWeatherApiConfig) []byte {
 }
 
 func (w *Weather) SetSelectedImage(img image.Image, ico string) {
-	w.WeatherImage = WeatherImage{img, ico}
+	w.WeatherImage = Image{img, ico}
 }
 
 func (w *Weather) persistCurrentWeatherData(weatherFileLocation string) {
@@ -152,7 +153,7 @@ func (w *Weather) persistCurrentWeatherData(weatherFileLocation string) {
 	jsonData, _ := json.Marshal(w)
 
 	err := ioutil.WriteFile(weatherFileLocation, []byte(jsonData), 0644)
-	fmt.Printf("Writing weather data to %s", weatherFileLocation)
+	fmt.Printf("Writing weather data to %s. \n", weatherFileLocation)
 	if err != nil {
 		panic("Failed to write weather data: " + err.Error())
 		return

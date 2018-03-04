@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"encoding/json"
@@ -8,31 +8,37 @@ import (
 )
 
 type (
-	WidgetConfig struct {
-		WidgetWeatherApiConfig    WidgetWeatherApiConfig    `json:"widget-weather"`
-		WidgetLocationConfig      WidgetLocationConfig      `json:"widget-location"`
-		WidgetTorrentStatusConfig WidgetTorrentStatusConfig `json:"widget-torrent-status"`
+
+	General struct {
+       ResourcesDir string `json:"resources-dir"`
 	}
 
-	WidgetWeatherApiConfig struct {
+	Widget struct {
+		General General  `json:"general"`
+		WidgetWeatherApiConfig    WidgetWeatherApi    `json:"widget-weather"`
+		WidgetLocationConfig      WidgetLocation      `json:"widget-location"`
+		WidgetTorrentStatusConfig WidgetTorrentStatus `json:"widget-torrent-status"`
+	}
+
+	WidgetWeatherApi struct {
 		ApiToken string `json:"api-token"`
 		City     string `json:"city"`
 	}
 
-	WidgetLocationConfig struct {
+	WidgetLocation struct {
 		GoogleMapsToken                  string `json:"google-maps-token"`
 		StationaryLocationGpsCoordinates string `json:"stationary-location-gps-coordinates"`
 		LocationProviderUrl              string `json:"location-provider-url"`
 	}
 
-	WidgetTorrentStatusConfig struct {
+	WidgetTorrentStatus struct {
 		TorrentWebApiUrl string `json:"torrent-web-api-url"`
 		Username         string `json:"username"`
 		Password         string `json:"password"`
 	}
 )
 
-func NewConfig() *WidgetConfig {
+func NewConfig() *Widget {
 
 	workingDir, _ := filepath.Abs(filepath.Dir("."))
 	configFile, err := os.Open(workingDir + "/config.json")
@@ -42,7 +48,7 @@ func NewConfig() *WidgetConfig {
 	}
 	decoder := json.NewDecoder(configFile)
 
-	widgetConfig := &WidgetConfig{}
+	widgetConfig := &Widget{}
 	err = decoder.Decode(widgetConfig)
 	if err != nil {
 		errors.New("Error decoding configuration: " + err.Error())
