@@ -25,7 +25,7 @@ var (
 	loopTick        = 0
 	radianTick      = 0
 	back            = false
-	mainLoop        = time.Second * 1
+	mainLoop        = time.Second * 200
 )
 
 type WeatherAnimation struct {
@@ -68,11 +68,8 @@ func (animation *WeatherAnimation) Next() (image.Image, <-chan time.Time, error)
 	} else if minute == "00" && second < 5 {
 		mainLoop = time.Microsecond * 20
 		drawHourBang(animation)
-
 	} else {
-
 		mainLoop = time.Second * 1
-
 		drawTime(animation)
 		drawLine(animation)
 		drawWeatherInformation(animation)
@@ -103,9 +100,9 @@ func drawWeatherInformation(animation *WeatherAnimation) {
 		return
 	}
 
-	if loopTick >= 3 && loopTick <= 6 {
+	if loopTick == 3 {
 
-		loopTick++
+		loopTick = 0
 		icon := weatherData.WeatherCurrent[0].Icon
 
 		if icon == WeatherProvider.WeatherImage.Ico {
@@ -156,13 +153,6 @@ func drawWeatherInformation(animation *WeatherAnimation) {
 		return
 	}
 
-	if loopTick >= 6 {
-       done := DrawText(weatherData.WeatherCurrent[0].Description, 13, animation.ctx)
-       if done {
-       	 loopTick = 0
-	   }
-	}
-
 	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
 	animation.ctx.DrawString(strconv.FormatFloat(weatherData.WeatherMain.Temp, 'f', 0, 64)+"°C", 4, 30)
 	loopTick++
@@ -187,7 +177,9 @@ func drawTime(animation *WeatherAnimation) {
 	animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
 
 	animation.ctx.DrawString(time.Now().Format("15"), 1, 13)
+
 	drawTimeSemicolon(animation)
+
 	animation.ctx.DrawString(time.Now().Format("04"), 17, 13)
 
 }

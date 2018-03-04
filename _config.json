@@ -7,5 +7,10 @@
      "google-maps-token" : "",
      "stationary-location-gps-coordinates" : "",
      "location-provider-url": ""
+   },
+   "widget-torrent-status" : {
+      "torrent-web-api-url": "",
+      "username":"",
+      "password":""
    }
 }

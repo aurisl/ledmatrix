@@ -35,6 +35,7 @@ func main() {
 	go StartHttpServer(widget, terminate)
 
 	for {
+
 		switch widget.name {
 		case "weather":
 			DrawWeatherWidget(toolkit, terminate, widgetConfig.WidgetWeatherApiConfig)
@@ -46,6 +47,8 @@ func main() {
 			DrawFire(toolkit, terminate, widget)
 		case "location":
 			DisplayDistance(toolkit, widget, terminate, widgetConfig.WidgetLocationConfig)
+		case "torrent":
+			DrawTorrentStatus(toolkit, terminate, widget, widgetConfig.WidgetTorrentStatusConfig)
 		default:
 			DrawWeatherWidget(toolkit, terminate, widgetConfig.WidgetWeatherApiConfig)
 		}

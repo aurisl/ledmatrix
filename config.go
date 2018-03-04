@@ -9,19 +9,26 @@ import (
 
 type (
 	WidgetConfig struct {
-		WidgetWeatherApiConfig WidgetWeatherApiConfig `json:"widget-weather" bson:"widget-weather"`
-		WidgetLocationConfig   WidgetLocationConfig   `json:"widget-location" bson:"widget-location"`
+		WidgetWeatherApiConfig    WidgetWeatherApiConfig    `json:"widget-weather"`
+		WidgetLocationConfig      WidgetLocationConfig      `json:"widget-location"`
+		WidgetTorrentStatusConfig WidgetTorrentStatusConfig `json:"widget-torrent-status"`
 	}
 
 	WidgetWeatherApiConfig struct {
-		ApiToken string `json:"api-token" bson:"api-token"`
-		City     string `json:"city" bson:"city"`
+		ApiToken string `json:"api-token"`
+		City     string `json:"city"`
 	}
 
 	WidgetLocationConfig struct {
-		GoogleMapsToken                  string `json:"google-maps-token" bson:"google-maps-token"`
-		StationaryLocationGpsCoordinates string `json:"stationary-location-gps-coordinates" bson:"stationary-location-gps-coordinates"`
-		LocationProviderUrl              string `json:"location-provider-url" bson:"location-provider-url"`
+		GoogleMapsToken                  string `json:"google-maps-token"`
+		StationaryLocationGpsCoordinates string `json:"stationary-location-gps-coordinates"`
+		LocationProviderUrl              string `json:"location-provider-url"`
+	}
+
+	WidgetTorrentStatusConfig struct {
+		TorrentWebApiUrl string `json:"torrent-web-api-url"`
+		Username         string `json:"username"`
+		Password         string `json:"password"`
 	}
 )
 
