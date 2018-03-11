@@ -12,32 +12,40 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 )
 
-func StartLoader(widgetCommand *command.WidgetCommand, terminate chan bool)  {
+func Start(commandInput <-chan command.WidgetCommand) {
 
-	ledToolkit := matrix.LoadLedMatrixToolkit()
-	defer ledToolkit.Close()
+	commandOutput := make(chan command.WidgetCommand, 1)
 
-	widgetConfig := config.NewConfig()
+	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput)
+	defer ledToolKit.Close()
+
+	appConfig := config.NewAppConfig()
 
 	for {
 
-		switch widgetCommand.Name {
-		case "weather":
-			weather.Draw(ledToolkit, terminate, widgetConfig.WidgetWeatherApiConfig)
-		case "boom":
-			explosion.Draw(ledToolkit, terminate, widgetCommand)
-		case "gif":
-			image.Draw(ledToolkit, terminate, widgetCommand)
-		case "fire":
-			fire.Draw(ledToolkit, terminate, widgetCommand)
-		case "location":
-			location.Draw(ledToolkit, terminate, widgetCommand, widgetConfig.WidgetLocationConfig)
-		case "torrent":
-			torrent.Draw(ledToolkit, terminate, widgetCommand, widgetConfig.WidgetTorrentStatusConfig)
+		select {
+		case widgetCommand := <-commandOutput:
+
+			switch widgetCommand.Name {
+			case "weather":
+				weather.Draw(ledToolKit, appConfig)
+			case "boom":
+				explosion.Draw(ledToolKit)
+			case "gif":
+				image.Draw(ledToolKit, widgetCommand.Params)
+			case "fire":
+				fire.Draw(ledToolKit)
+			case "location":
+				location.Draw(ledToolKit, appConfig)
+			case "torrent":
+				torrent.Draw(ledToolKit, appConfig)
+			default:
+				weather.Draw(ledToolKit, appConfig)
+			}
 		default:
-			weather.Draw(ledToolkit, terminate, widgetConfig.WidgetWeatherApiConfig)
+			weather.Draw(ledToolKit, appConfig)
 		}
+
 	}
 
 }
-

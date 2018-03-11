@@ -4,32 +4,27 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"github.com/aurisl/ledmatrix/command"
 	"github.com/aurisl/ledmatrix/matrix"
+	"net/url"
 )
 
-func Draw(toolkit *matrix.Toolkit, close chan bool, WidgetCommand *command.WidgetCommand) {
+func Draw(toolkit *matrix.LedToolKit, params url.Values) {
 
-	imgUrl := WidgetCommand.Params.Get("url")
+	imgUrl := params.Get("url")
 	response, err := http.Get(imgUrl)
 	if err != nil {
-		WidgetCommand.Name = ""
 		return
 	}
 
 	closed, err := toolkit.MatrixToolkit.PlayGIF(response.Body)
 	if err != nil {
-		WidgetCommand.Name = ""
 		return
 	}
 
-	animationDuration := WidgetCommand.Params.Get("duration")
+	animationDuration := params.Get("duration")
 	if animationDuration != "" {
 		if animationDuration == "-1" {
-			select {
-			case <-close:
-				WidgetCommand.Name = ""
-			}
+			return
 		}
 
 		d, _ := strconv.ParseInt(animationDuration, 10, 32)
@@ -37,8 +32,6 @@ func Draw(toolkit *matrix.Toolkit, close chan bool, WidgetCommand *command.Widge
 	} else {
 		time.Sleep(time.Second * 10)
 	}
-
-	WidgetCommand.Name = ""
 
 	closed <- true
 }

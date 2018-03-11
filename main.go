@@ -7,10 +7,8 @@ import (
 
 func main() {
 
-	widgetCommand := &command.WidgetCommand{}
+	commandInput := make(chan command.WidgetCommand)
 
-	terminate := make(chan bool)
-
-	command.StartHttpServer(widgetCommand, terminate)
-	widget.StartLoader(widgetCommand, terminate)
+	command.Start(commandInput)
+	widget.Start(commandInput)
 }

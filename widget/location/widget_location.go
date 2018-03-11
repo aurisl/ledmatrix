@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"time"
 	"github.com/aurisl/ledmatrix/config"
-	"github.com/aurisl/ledmatrix/command"
 	"github.com/aurisl/ledmatrix/draw"
 	"github.com/aurisl/ledmatrix/matrix"
 )
@@ -49,24 +48,18 @@ var (
 
 type animation struct {
 	ctx    *gg.Context
-	close  chan bool
 	config config.WidgetLocation
 }
 
-func Draw(toolkit *matrix.Toolkit,
-	close chan bool,
-	widgetCommand *command.WidgetCommand,
-	locationConfig config.WidgetLocation) {
+func Draw(toolkit *matrix.LedToolKit,
+	config *config.AppConfig) {
 
 	animation := &animation{
 		ctx:    gg.NewContext(32, 32),
-		close:  close,
-		config: locationConfig,
+		config: config.WidgetLocationConfig,
 	}
 
-	toolkit.MatrixToolkit.PlayAnimation(animation)
-
-	widgetCommand.Name = ""
+	toolkit.PlayAnimation(animation)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -114,12 +107,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		return nil, nil, io.EOF
 	}
 
-	select {
-	case <-animation.close:
-		return nil, nil, io.EOF
-	default:
-		return animation.ctx.Image(), time.After(time.Second * 1), nil
-	}
+	return animation.ctx.Image(), time.After(time.Second * 1), nil
 
 }
 

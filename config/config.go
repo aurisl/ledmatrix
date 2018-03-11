@@ -13,7 +13,7 @@ type (
        ResourcesDir string `json:"resources-dir"`
 	}
 
-	Widget struct {
+	AppConfig struct {
 		General General  `json:"general"`
 		WidgetWeatherApiConfig    WidgetWeatherApi    `json:"widget-weather"`
 		WidgetLocationConfig      WidgetLocation      `json:"widget-location"`
@@ -38,7 +38,7 @@ type (
 	}
 )
 
-func NewConfig() *Widget {
+func NewAppConfig() *AppConfig {
 
 	workingDir, _ := filepath.Abs(filepath.Dir("."))
 	configFile, err := os.Open(workingDir + "/config.json")
@@ -48,7 +48,7 @@ func NewConfig() *Widget {
 	}
 	decoder := json.NewDecoder(configFile)
 
-	widgetConfig := &Widget{}
+	widgetConfig := &AppConfig{}
 	err = decoder.Decode(widgetConfig)
 	if err != nil {
 		errors.New("Error decoding configuration: " + err.Error())

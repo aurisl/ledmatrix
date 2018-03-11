@@ -15,16 +15,17 @@ type (
 	}
 )
 
-func StartHttpServer(widget *WidgetCommand, terminateCurrentRunning chan bool) {
+func Start(commandInput chan WidgetCommand) {
 
 	go func() {
 		http.HandleFunc("/exec", func(w http.ResponseWriter, r *http.Request) {
 			widgetName := html.EscapeString(r.URL.Query().Get("widget"))
-			fmt.Fprintf(w, "Command '%q' received. ", widgetName)
-			widget.Name = widgetName
-			widget.Params = r.URL.Query()
+			fmt.Fprintf(w, "Command %q received. ", widgetName)
 
-			terminateCurrentRunning <- true
+			commandInput <- WidgetCommand{
+				Name: widgetName,
+				Params: r.URL.Query(),
+			}
 		})
 
 		err := http.ListenAndServe(":8080", nil)

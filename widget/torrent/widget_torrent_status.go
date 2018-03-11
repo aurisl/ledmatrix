@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/aurisl/ledmatrix/command"
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/draw"
 	"github.com/aurisl/ledmatrix/matrix"
@@ -17,8 +16,6 @@ import (
 
 type animation struct {
 	ctx                *gg.Context
-	close              chan bool
-	widgetCommand      *command.WidgetCommand
 	reloadTorrent      bool
 	torrentInformation string
 	torrentProgress    string
@@ -29,15 +26,11 @@ type animation struct {
 	config             config.WidgetTorrentStatus
 }
 
-func Draw(toolkit *matrix.Toolkit,
-	close chan bool,
-	widgetCommand *command.WidgetCommand,
-	widgetConfig config.WidgetTorrentStatus) {
+func Draw(ledTooKit *matrix.LedToolKit,
+	config *config.AppConfig) {
 
 	animation := &animation{
-		ctx:                toolkit.Ctx,
-		close:              close,
-		widgetCommand:      widgetCommand,
+		ctx:                ledTooKit.Ctx,
 		reloadTorrent:      true,
 		clientActive:       false,
 		torrentInformation: `N/A`,
@@ -45,10 +38,10 @@ func Draw(toolkit *matrix.Toolkit,
 		tick:               0,
 		borderShader:       draw.NewBorderShader(),
 		percentage:         0,
-		config:             widgetConfig,
+		config:             config.WidgetTorrentStatusConfig,
 	}
 
-	toolkit.MatrixToolkit.PlayAnimation(animation)
+	ledTooKit.PlayAnimation(animation)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -58,43 +51,35 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
 
 	if animation.reloadTorrent == true || animation.tick%30 == 0 {
-		if updateTorrentInformation(animation) == false {
-			animation.widgetCommand.Name = ""
+		if drawTorrentInformation(animation) == false {
 			return nil, nil, io.EOF
 		}
 	}
 
 	if animation.clientActive == true && animation.torrentProgress == "" {
 		drawRedScreen(animation)
-
-		select {
-		case <-animation.close:
-			return nil, nil, io.EOF
-		default:
-			return animation.ctx.Image(), time.After(time.Millisecond * 50), nil
-		}
+		return animation.ctx.Image(), time.After(time.Millisecond * 50), nil
 	}
 
-	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx)
-	if isScrollingCompleted == true {
-		animation.reloadTorrent = true
-	}
-
+	drawScrollingTorrentText(animation)
 	draw.GradientLine(animation.ctx)
 	animation.borderShader.DrawBorderShader(animation.ctx)
 
 	percentageColor := draw.BlendingPercentageColor(uint8(animation.percentage))
 	draw.Text(animation.torrentProgress, 8, 30, animation.ctx, percentageColor)
 
-	select {
-	case <-animation.close:
-		return nil, nil, io.EOF
-	default:
-		return animation.ctx.Image(), time.After(time.Millisecond * 70), nil
+	return animation.ctx.Image(), time.After(time.Millisecond * 70), nil
+
+}
+func drawScrollingTorrentText(animation *animation) {
+
+	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx)
+	if isScrollingCompleted == true {
+		animation.reloadTorrent = true
 	}
 }
 
-func updateTorrentInformation(animation *animation) bool {
+func drawTorrentInformation(animation *animation) bool {
 
 	UTorrentClient, err := NewUTorrentClient(
 		animation.config.TorrentWebApiUrl,
@@ -102,13 +87,11 @@ func updateTorrentInformation(animation *animation) bool {
 		animation.config.Password)
 
 	if err != nil {
-		animation.widgetCommand.Name = ""
 		return false
 	}
 
 	torrentList, err := UTorrentClient.getList()
 	if err != nil {
-		animation.widgetCommand.Name = ""
 		return false
 	}
 

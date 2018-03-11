@@ -6,7 +6,6 @@ import (
 	"image/color"
 	"io"
 	"time"
-	"github.com/aurisl/ledmatrix/command"
 	"github.com/aurisl/ledmatrix/matrix"
 )
 
@@ -17,37 +16,27 @@ var (
 
 type animation struct {
 	ctx           *gg.Context
-	close         chan bool
-	widgetCommand *command.WidgetCommand
 }
 
-func Draw(toolkit *matrix.Toolkit, close chan bool, widget *command.WidgetCommand) {
+func Draw(toolkit *matrix.LedToolKit) {
 
 	animation := &animation{
 		ctx:           toolkit.Ctx,
-		close:         close,
-		widgetCommand: widget,
 	}
 
-	toolkit.MatrixToolkit.PlayAnimation(animation)
+	toolkit.PlayAnimation(animation)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 	explosion(animation)
 
-	select {
-	case <-animation.close:
+	if numberOfLoops == 10 {
+		numberOfLoops = 0
 		return nil, nil, io.EOF
-	default:
-		if numberOfLoops == 10 {
-			numberOfLoops = 0
-			animation.widgetCommand.Name = ""
-			return nil, nil, io.EOF
-		}
-
-		return animation.ctx.Image(), time.After(time.Millisecond * 10), nil
 	}
+
+	return animation.ctx.Image(), time.After(time.Millisecond * 10), nil
 }
 
 func explosion(animation *animation) {

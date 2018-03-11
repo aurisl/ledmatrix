@@ -8,7 +8,6 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -30,19 +29,17 @@ var (
 
 type animation struct {
 	ctx           *gg.Context
-	close         chan bool
 	weatherConfig config.WidgetWeatherApi
 }
 
-func Draw(toolkit *matrix.Toolkit, close chan bool, weatherConfig config.WidgetWeatherApi) {
+func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
 	animation := &animation{
 		ctx:           toolkit.Ctx,
-		close:         close,
-		weatherConfig: weatherConfig,
+		weatherConfig: config.WidgetWeatherApiConfig,
 	}
 
-	toolkit.MatrixToolkit.PlayAnimation(animation)
+	toolkit.PlayAnimation(animation)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -72,12 +69,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		drawWeatherInformation(animation)
 	}
 
-	select {
-	case <-animation.close:
-		return nil, nil, io.EOF
-	default:
-		return animation.ctx.Image(), time.After(mainLoop), nil
-	}
+	return animation.ctx.Image(), time.After(mainLoop), nil
 }
 
 func drawWeatherInformation(animation *animation) {

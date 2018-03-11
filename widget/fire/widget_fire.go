@@ -4,7 +4,6 @@ import (
 	"github.com/fogleman/gg"
 	"image"
 	"image/color"
-	"io"
 	"time"
 	"github.com/aurisl/ledmatrix/command"
 	"github.com/aurisl/ledmatrix/matrix"
@@ -12,19 +11,16 @@ import (
 
 type animation struct {
 	ctx           *gg.Context
-	close         chan bool
 	widgetCommand *command.WidgetCommand
 }
 
-func Draw(toolkit *matrix.Toolkit, close chan bool, widgetCommand *command.WidgetCommand) {
+func Draw(toolkit *matrix.LedToolKit) {
 
 	animation := &animation{
 		ctx:           gg.NewContext(32, 32),
-		close:         close,
-		widgetCommand: widgetCommand,
 	}
 
-	toolkit.MatrixToolkit.PlayAnimation(animation)
+	toolkit.PlayAnimation(animation)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -61,10 +57,5 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 	animation.ctx.Stroke()
 
-	select {
-	case <-animation.close:
-		return nil, nil, io.EOF
-	default:
-		return animation.ctx.Image(), time.After(time.Millisecond * 500), nil
-	}
+	return animation.ctx.Image(), time.After(time.Millisecond * 500), nil
 }
