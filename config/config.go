@@ -41,7 +41,7 @@ type (
 func NewAppConfig() *AppConfig {
 
 	//@todo should come from --working-dir argument
-	configFile, err := os.Open( "/home/pi/go/src/github.com/aurisl/ledmatrix/config.json")
+	configFile, err := os.Open( "/Users/aurimaslickus/golang/src/github.com/aurisl/ledmatrix/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())

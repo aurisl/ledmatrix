@@ -12,11 +12,11 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 )
 
-func Start(commandInput <-chan command.WidgetCommand) {
+func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 
 	commandOutput := make(chan command.WidgetCommand, 1)
 
-	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput)
+	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput, m)
 	defer ledToolKit.Close()
 
 	appConfig := config.NewAppConfig()

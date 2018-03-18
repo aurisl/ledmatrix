@@ -26,6 +26,9 @@ func Start(commandInput chan WidgetCommand) {
 				Name: widgetName,
 				Params: r.URL.Query(),
 			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 		})
 
 		err := http.ListenAndServe(":8080", nil)
