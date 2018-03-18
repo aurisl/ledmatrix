@@ -109,7 +109,7 @@ func loadFontFace(ctx *gg.Context) {
 		return
 	}
 
-	if err := ctx.LoadFontFace("resources/fonts/PixelOperator.ttf", 16); err != nil {
+	if err := ctx.LoadFontFace("/home/pi/go/src/github.com/aurisl/ledmatrix/resources/fonts/PixelOperator.ttf", 16); err != nil {
 		panic(err)
 	}
 

@@ -57,9 +57,9 @@ func NewWeather() *Weather {
 	return &Weather{}
 }
 
-func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi) {
+func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi, general config.General) {
 
-	workingDirectory, err := filepath.Abs(filepath.Dir("./resources" + weatherFileName))
+	workingDirectory, err := filepath.Abs(general.ResourcesDir)
 	if err != nil {
 		log.Fatal(err)
 	}

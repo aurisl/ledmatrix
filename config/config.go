@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"path/filepath"
 )
 
 type (
 
+	//@todo make General config accessible everywhere.
 	General struct {
        ResourcesDir string `json:"resources-dir"`
 	}
@@ -40,8 +40,8 @@ type (
 
 func NewAppConfig() *AppConfig {
 
-	workingDir, _ := filepath.Abs(filepath.Dir("."))
-	configFile, err := os.Open(workingDir + "/config.json")
+	//@todo should come from --working-dir argument
+	configFile, err := os.Open( "/home/pi/go/src/github.com/aurisl/ledmatrix/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())

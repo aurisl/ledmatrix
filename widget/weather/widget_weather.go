@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 	"github.com/aurisl/ledmatrix/config"
@@ -30,6 +29,7 @@ var (
 type animation struct {
 	ctx           *gg.Context
 	weatherConfig config.WidgetWeatherApi
+	generalConfig config.General
 }
 
 func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
@@ -37,6 +37,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 	animation := &animation{
 		ctx:           toolkit.Ctx,
 		weatherConfig: config.WidgetWeatherApiConfig,
+		generalConfig: config.General,
 	}
 
 	toolkit.PlayAnimation(animation)
@@ -74,7 +75,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 func drawWeatherInformation(animation *animation) {
 
-	weatherData := readWeatherData(animation.weatherConfig)
+	weatherData := readWeatherData(animation.weatherConfig, animation.generalConfig)
 
 	if len(weatherData.WeatherCurrent) == 0 {
 		return
@@ -90,8 +91,7 @@ func drawWeatherInformation(animation *animation) {
 			return
 		}
 
-		workingDirectory, _ := filepath.Abs(filepath.Dir("resources/img"))
-		iconPath := workingDirectory + "/resources/img/weather_icons/ " + icon + ".png"
+		iconPath := animation.generalConfig.ResourcesDir + "/img/weather_icons/ " + icon + ".png"
 		iconFile, err := os.Open(iconPath)
 
 		var img image.Image
@@ -155,10 +155,10 @@ func drawTimeSemicolon(animation *animation) {
 	displayTick = true
 }
 
-func readWeatherData(weatherConfig config.WidgetWeatherApi) API {
+func readWeatherData(weatherConfig config.WidgetWeatherApi, general config.General) API {
 	duration := time.Since(lastUpdate)
 	if duration.Minutes() > 15 {
-		go provider.ReadWeather(weatherConfig)
+		go provider.ReadWeather(weatherConfig, general)
 		lastUpdate = time.Now()
 	}
 
