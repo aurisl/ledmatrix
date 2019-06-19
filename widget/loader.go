@@ -2,14 +2,14 @@ package widget
 
 import (
 	"github.com/aurisl/ledmatrix/command"
+	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget/explosion"
-	"github.com/aurisl/ledmatrix/widget/weather"
-	"github.com/aurisl/ledmatrix/widget/image"
 	"github.com/aurisl/ledmatrix/widget/fire"
+	"github.com/aurisl/ledmatrix/widget/image"
 	"github.com/aurisl/ledmatrix/widget/location"
 	"github.com/aurisl/ledmatrix/widget/torrent"
-	"github.com/aurisl/ledmatrix/matrix"
-	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/widget/weather"
 )
 
 func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
@@ -19,8 +19,6 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput, m)
 	defer ledToolKit.Close()
 
-	appConfig := config.NewAppConfig()
-
 	for {
 
 		select {
@@ -28,7 +26,7 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 
 			switch widgetCommand.Name {
 			case "weather":
-				weather.Draw(ledToolKit, appConfig)
+				weather.Draw(ledToolKit, config.App)
 			case "boom":
 				explosion.Draw(ledToolKit)
 			case "gif":
@@ -36,14 +34,14 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 			case "fire":
 				fire.Draw(ledToolKit)
 			case "location":
-				location.Draw(ledToolKit, appConfig)
+				location.Draw(ledToolKit, config.App)
 			case "torrent":
-				torrent.Draw(ledToolKit, appConfig)
+				torrent.Draw(ledToolKit, config.App)
 			default:
-				weather.Draw(ledToolKit, appConfig)
+				weather.Draw(ledToolKit, config.App)
 			}
 		default:
-			weather.Draw(ledToolKit, appConfig)
+			weather.Draw(ledToolKit, config.App)
 		}
 
 	}

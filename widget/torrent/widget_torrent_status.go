@@ -1,6 +1,9 @@
 package torrent
 
 import (
+	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/draw"
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/dustin/go-humanize"
 	"github.com/fogleman/gg"
 	"image"
@@ -9,9 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/aurisl/ledmatrix/config"
-	"github.com/aurisl/ledmatrix/draw"
-	"github.com/aurisl/ledmatrix/matrix"
 )
 
 type animation struct {
@@ -73,7 +73,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 }
 func drawScrollingTorrentText(animation *animation) {
 
-	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx)
+	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx, color.RGBA{255, 255, 0, 255})
 	if isScrollingCompleted == true {
 		animation.reloadTorrent = true
 	}
@@ -118,7 +118,7 @@ func drawTorrentInformation(animation *animation) bool {
 
 func drawRedScreen(animation *animation) {
 
-	if animation.tick % 10 == 0 {
+	if animation.tick%10 == 0 {
 		animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
 	} else {
 		animation.ctx.SetColor(color.RGBA{0, 0, 0, 255})

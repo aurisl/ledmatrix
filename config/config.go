@@ -3,18 +3,12 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"flag"
 	"os"
 )
 
 type (
-
-	//@todo make General config accessible everywhere.
-	General struct {
-       ResourcesDir string `json:"resources-dir"`
-	}
-
 	AppConfig struct {
-		General General  `json:"general"`
 		WidgetWeatherApiConfig    WidgetWeatherApi    `json:"widget-weather"`
 		WidgetLocationConfig      WidgetLocation      `json:"widget-location"`
 		WidgetTorrentStatusConfig WidgetTorrentStatus `json:"widget-torrent-status"`
@@ -38,21 +32,32 @@ type (
 	}
 )
 
-func NewAppConfig() *AppConfig {
+var App *AppConfig
+var workingDir = flag.String("working-dir", "", "Path to working directory")
 
-	//@todo should come from --working-dir argument
-	configFile, err := os.Open( "/Users/aurimaslickus/golang/src/github.com/aurisl/ledmatrix/config.json")
+func init() {
+	flag.Parse()
+}
+
+func InitializeConfiguration() *AppConfig {
+
+	configFile, err := os.Open(*workingDir + "/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())
 	}
 	decoder := json.NewDecoder(configFile)
 
-	widgetConfig := &AppConfig{}
-	err = decoder.Decode(widgetConfig)
+	App = &AppConfig{}
+
+	err = decoder.Decode(App)
+
 	if err != nil {
 		errors.New("Error decoding configuration: " + err.Error())
 	}
+	return App
+}
 
-	return widgetConfig
+func (e *AppConfig) GetResourcesDir() string {
+	return *workingDir + "/resources"
 }

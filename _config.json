@@ -1,19 +1,16 @@
 {
-   "general" : {
-     "resources-dir" : ""
-   },
-   "widget-weather" : {
-      "api-token" : "",
-      "city" : ""
-   },
-   "widget-location" : {
-     "google-maps-token" : "",
-     "stationary-location-gps-coordinates" : "",
-     "location-provider-url": ""
-   },
-   "widget-torrent-status" : {
-      "torrent-web-api-url": "",
-      "username":"",
-      "password":""
-   }
+  "widget-weather": {
+    "api-token": "",
+    "city": ""
+  },
+  "widget-location": {
+    "google-maps-token": "",
+    "stationary-location-gps-coordinates": "",
+    "location-provider-url": ""
+  },
+  "widget-torrent-status": {
+    "torrent-web-api-url": "",
+    "username": "",
+    "password": ""
+  }
 }

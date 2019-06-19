@@ -1,7 +1,9 @@
+// +build hardware
+
 package matrix
 
 import (
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	//"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"github.com/aurisl/ledmatrix/error"
 )
 

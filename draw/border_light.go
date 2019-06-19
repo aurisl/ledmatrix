@@ -8,11 +8,20 @@ import (
 type (
 	BorderShared struct {
 		tick uint8
+		step uint8
 	}
 )
 
 func NewBorderShader() *BorderShared {
-	return &BorderShared{}
+	return &BorderShared{0, 1}
+}
+
+func (border *BorderShared) SetTick(tick uint8) {
+	border.tick = tick
+}
+
+func (border *BorderShared) SetStep(step uint8) {
+	border.step = step
 }
 
 func (border *BorderShared) DrawBorderShader(ctx *gg.Context) {
@@ -40,7 +49,7 @@ func (border *BorderShared) DrawBorderShader(ctx *gg.Context) {
 		border.drawLine(ctx, xlCallback, ylCallback)
 	}
 
-	border.tick++
+	border.tick = border.tick + border.step
 }
 
 func (border *BorderShared) drawLine(ctx *gg.Context, xCallback func(i uint8) uint8, yCallback func(i uint8) uint8) {
@@ -52,7 +61,7 @@ func (border *BorderShared) drawLine(ctx *gg.Context, xCallback func(i uint8) ui
 
 	for i = 1; i <= numberOfSteps; i++ {
 		lineColor = lineColor + colorShiftStep
-		ctx.SetColor(color.RGBA{lineColor, 0, 0, 255})
+		ctx.SetColor(color.RGBA{R: lineColor, A: 255})
 
 		x := xCallback(i)
 		y := yCallback(i)

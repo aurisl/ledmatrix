@@ -1,11 +1,11 @@
 package image
 
 import (
+	"github.com/aurisl/ledmatrix/matrix"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
-	"github.com/aurisl/ledmatrix/matrix"
-	"net/url"
 )
 
 func Draw(toolkit *matrix.LedToolKit, params url.Values) {

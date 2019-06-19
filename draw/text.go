@@ -1,6 +1,7 @@
 package draw
 
 import (
+	"github.com/aurisl/ledmatrix/config"
 	"github.com/fogleman/gg"
 	"image/color"
 	"strings"
@@ -73,7 +74,7 @@ var characterPixelSize = map[string]int{
 var textPosition = 35.0
 var fontLoaded = false
 
-func TextScrolling(text string, y float64, ctx *gg.Context) bool {
+func TextScrolling(text string, y float64, ctx *gg.Context, color color.RGBA) bool {
 
 	loadFontFace(ctx)
 
@@ -81,7 +82,7 @@ func TextScrolling(text string, y float64, ctx *gg.Context) bool {
 	totalPixels := countWordPixels(text)
 
 	ctx.SetRGB(0, 0, 0)
-	ctx.SetColor(color.RGBA{255, 255, 0, 255})
+	ctx.SetColor(color)
 	ctx.DrawString(text, textPosition, y)
 
 	textPosition--
@@ -109,7 +110,7 @@ func loadFontFace(ctx *gg.Context) {
 		return
 	}
 
-	if err := ctx.LoadFontFace("/Users/aurimaslickus/golang/src/github.com/aurisl/ledmatrix/resources/fonts/PixelOperator.ttf", 16); err != nil {
+	if err := ctx.LoadFontFace(config.App.GetResourcesDir() + "/fonts/PixelOperator.ttf", 16); err != nil {
 		panic(err)
 	}
 
@@ -125,7 +126,7 @@ func countWordPixels(text string) int {
 		if size, ok := characterPixelSize[charValue]; ok {
 			totalPixels += size
 		} else {
-			totalPixels += 3
+			totalPixels += 6
 		}
 	}
 	return totalPixels

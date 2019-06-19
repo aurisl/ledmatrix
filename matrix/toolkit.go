@@ -1,11 +1,11 @@
 package matrix
 
 import (
-	"github.com/fogleman/gg"
-	"time"
-	"io"
-	"image"
 	"github.com/aurisl/ledmatrix/command"
+	"github.com/fogleman/gg"
+	"image"
+	"io"
+	"time"
 )
 
 var matrixToolkit *ToolKit

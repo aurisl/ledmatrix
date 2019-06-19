@@ -1,8 +1,11 @@
+// +build software
+
 package matrix
 
 import (
-	"image/color"
 	"encoding/json"
+	"image/color"
+	"sync"
 )
 
 type Emulator struct {
@@ -15,6 +18,7 @@ type Emulator struct {
 }
 
 var colorMap = make(map[int]map[int]map[string]uint32, 32)
+var mutex = &sync.Mutex{}
 
 func NewEmulator(w, h int, renderCallback func(pixelMap []byte)) *Emulator {
 	emulator := &Emulator{
@@ -35,6 +39,7 @@ func (e *Emulator) Geometry() (width, height int) {
 func (e *Emulator) Apply(LEDs []color.Color) error {
 	defer func() { e.LEDs = make([]color.Color, e.Height*e.Width) }()
 
+	mutex.Lock()
 	for col := 0; col < e.Width; col++ {
 		colorMap[col] = make(map[int]map[string]uint32, e.Width)
 		for row := 0; row < e.Height; row++ {
@@ -48,6 +53,7 @@ func (e *Emulator) Apply(LEDs []color.Color) error {
 			colorMap[col][row]["B"] = B >> 8
 		}
 	}
+	mutex.Unlock()
 
 	pixelMap, _ := json.Marshal(colorMap)
 	e.renderCallback(pixelMap)
