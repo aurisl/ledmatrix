@@ -37,7 +37,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 	borderShader := draw.NewBorderShader()
 	initialSecond, _ := strconv.ParseInt(time.Now().Format("05"), 10, 8)
 	borderShader.SetTick(uint8(initialSecond) * 2 + 30)
-	borderShader.SetStep(2);
+	borderShader.SetStep(2)
 
 	animation := &animation{
 		ctx:           toolkit.Ctx,
