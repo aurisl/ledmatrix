@@ -20,6 +20,10 @@ func (border *BorderShared) SetTick(tick uint8) {
 	border.tick = tick
 }
 
+func (border *BorderShared) GetTick() uint8 {
+	return border.tick
+}
+
 func (border *BorderShared) SetStep(step uint8) {
 	border.step = step
 }

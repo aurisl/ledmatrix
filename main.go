@@ -15,9 +15,10 @@ func main() {
 
 	command.Start(commandInput)
 
+	//MMatrix := matrix.CreateHardwareMatrix()
+
 	onCanvasRender := command.StartFeed()
+	MMatrix := matrix.NewEmulator(32, 32, onCanvasRender)
 
-	emulatedMatrix := matrix.NewEmulator(32, 32, onCanvasRender)
-
-	widget.Start(commandInput, emulatedMatrix)
+	widget.Start(commandInput, MMatrix)
 }

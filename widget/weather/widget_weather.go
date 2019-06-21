@@ -36,7 +36,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
 	borderShader := draw.NewBorderShader()
 	initialSecond, _ := strconv.ParseInt(time.Now().Format("05"), 10, 8)
-	borderShader.SetTick(uint8(initialSecond) * 2 + 30)
+	borderShader.SetTick(uint8(initialSecond) * 2 + 10)
 	borderShader.SetStep(2)
 
 	animation := &animation{
@@ -53,10 +53,19 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
 
 	currentDate := time.Now()
+	second, err := strconv.ParseInt(currentDate.Format("05"), 10, 8)
+	if second == 0 {
+		animation.borderShader.SetTick( 4) //Reset tick, to correct path of second border
+	}
+
+	if animation.borderShader.GetTick() % 32 == 0 {
+		animation.borderShader.SetTick(animation.borderShader.GetTick() + 3)
+	}
+
+	fmt.Println(second)
 
 	hour, err := strconv.ParseInt(currentDate.Format("15"), 10, 8)
 	minute := currentDate.Format("04")
-	second, err := strconv.ParseInt(currentDate.Format("05"), 10, 8)
 
 	if err != nil {
 		fmt.Println(err)
