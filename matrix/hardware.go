@@ -1,3 +1,5 @@
+// +build hardware
+
 package matrix
 
 import (
@@ -5,18 +7,16 @@ import (
 	"github.com/aurisl/ledmatrix/error"
 )
 
-func initializeMatrixToolkit() *ToolKit {
-	matrixConfig := createMatrixDefaultConfiguration()
+func CreateHardwareMatrix() Matrix {
+	matrixConfig := CreateMatrixDefaultConfiguration()
 
 	matrix, err := rgbmatrix.NewRGBLedMatrix(matrixConfig)
 	error.Fatal(err)
 
-	toolkit := NewToolKit(matrix)
-
-	return toolkit
+	return matrix
 }
 
-func createMatrixDefaultConfiguration() *rgbmatrix.HardwareConfig {
+func CreateMatrixDefaultConfiguration() *rgbmatrix.HardwareConfig {
 
 	matrixConfig := &rgbmatrix.DefaultConfig
 	matrixConfig.Rows = 32

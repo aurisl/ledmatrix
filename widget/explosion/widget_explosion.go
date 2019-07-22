@@ -1,12 +1,12 @@
 package explosion
 
 import (
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/fogleman/gg"
 	"image"
 	"image/color"
 	"io"
 	"time"
-	"github.com/aurisl/ledmatrix/matrix"
 )
 
 var (
@@ -15,13 +15,13 @@ var (
 )
 
 type animation struct {
-	ctx           *gg.Context
+	ctx *gg.Context
 }
 
 func Draw(toolkit *matrix.LedToolKit) {
 
 	animation := &animation{
-		ctx:           toolkit.Ctx,
+		ctx: toolkit.Ctx,
 	}
 
 	toolkit.PlayAnimation(animation)

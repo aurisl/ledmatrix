@@ -1,8 +1,8 @@
 package draw
 
 import (
-	"image/color"
 	"github.com/fogleman/gg"
+	"image/color"
 )
 
 func ClearCanvas(ctx *gg.Context) {

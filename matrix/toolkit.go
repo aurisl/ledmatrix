@@ -1,11 +1,11 @@
 package matrix
 
 import (
-	"github.com/fogleman/gg"
-	"time"
-	"io"
-	"image"
 	"github.com/aurisl/ledmatrix/command"
+	"github.com/fogleman/gg"
+	"image"
+	"io"
+	"time"
 )
 
 var matrixToolkit *ToolKit
@@ -19,10 +19,12 @@ type (
 	}
 )
 
-func NewLedToolkit(commandInput <-chan command.WidgetCommand, commandOutput chan command.WidgetCommand) *LedToolKit {
+func NewLedToolkit(commandInput <-chan command.WidgetCommand, commandOutput chan command.WidgetCommand, m Matrix) *LedToolKit {
+
+	toolkit := NewToolKit(m)
 
 	return &LedToolKit{
-		MatrixToolkit: initializeMatrixToolkit(),
+		MatrixToolkit: toolkit,
 		Ctx:           gg.NewContext(32, 32),
 		commandInput:  commandInput,
 		commandOutput: commandOutput,
@@ -51,7 +53,6 @@ func (toolKit *LedToolKit) PlayAnimation(a Animation) error {
 				return err
 			}
 		}
-
 	}
 
 	return err

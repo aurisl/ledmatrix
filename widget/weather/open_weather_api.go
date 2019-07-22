@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/aurisl/ledmatrix/config"
 	"image"
 	"io"
 	"io/ioutil"
@@ -12,7 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"github.com/aurisl/ledmatrix/config"
 )
 
 type (
@@ -57,9 +57,9 @@ func NewWeather() *Weather {
 	return &Weather{}
 }
 
-func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi, general config.General) {
+func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi) {
 
-	workingDirectory, err := filepath.Abs(general.ResourcesDir)
+	workingDirectory, err := filepath.Abs(config.App.GetResourcesDir())
 	if err != nil {
 		log.Fatal(err)
 	}

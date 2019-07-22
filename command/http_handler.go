@@ -18,18 +18,25 @@ type (
 func Start(commandInput chan WidgetCommand) {
 
 	go func() {
+
 		http.HandleFunc("/exec", func(w http.ResponseWriter, r *http.Request) {
+
 			widgetName := html.EscapeString(r.URL.Query().Get("widget"))
 			fmt.Fprintf(w, "Command %q received. ", widgetName)
 
 			commandInput <- WidgetCommand{
-				Name: widgetName,
+				Name:   widgetName,
 				Params: r.URL.Query(),
 			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 		})
 
-		err := http.ListenAndServe(":8080", nil)
+		fs := http.FileServer(http.Dir("public"))
+		http.Handle("/", http.StripPrefix("/", fs))
+
+		err := http.ListenAndServe(":8081", nil)
 		error.Fatal(err)
 	}()
 }
-

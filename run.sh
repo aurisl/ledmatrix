@@ -1,4 +1,4 @@
 #!/bin/bash
 
-nohup ./ledmatrix > log.txt &
+nohup ./ledmatrix --working-dir=/path/to/ledmatrix > log.txt &
 echo $! > pid.txt

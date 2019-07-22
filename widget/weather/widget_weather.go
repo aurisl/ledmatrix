@@ -3,6 +3,9 @@ package weather
 import (
 	"bytes"
 	"fmt"
+	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/draw"
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
 	"image"
@@ -13,31 +16,33 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"github.com/aurisl/ledmatrix/config"
-	"github.com/aurisl/ledmatrix/draw"
-	"github.com/aurisl/ledmatrix/matrix"
 )
 
 var (
 	provider    = NewWeather()
 	lastUpdate  time.Time
-	displayTick      = false
-	loopTick= 0
-	mainLoop  = time.Second * 200
+	displayTick = false
+	loopTick    = 0
+	mainLoop    = time.Second
 )
 
 type animation struct {
 	ctx           *gg.Context
 	weatherConfig config.WidgetWeatherApi
-	generalConfig config.General
+	borderShader  *draw.BorderShared
 }
 
 func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
+	borderShader := draw.NewBorderShader()
+	initialSecond, _ := strconv.ParseInt(time.Now().Format("05"), 10, 8)
+	borderShader.SetTick(uint8(initialSecond) * 2 + 10)
+	borderShader.SetStep(2)
+
 	animation := &animation{
 		ctx:           toolkit.Ctx,
 		weatherConfig: config.WidgetWeatherApiConfig,
-		generalConfig: config.General,
+		borderShader:  borderShader,
 	}
 
 	toolkit.PlayAnimation(animation)
@@ -48,10 +53,19 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
 
 	currentDate := time.Now()
+	second, err := strconv.ParseInt(currentDate.Format("05"), 10, 8)
+	if second == 0 {
+		animation.borderShader.SetTick( 4) //Reset tick, to correct path of second border
+	}
+
+	if animation.borderShader.GetTick() % 32 == 0 {
+		animation.borderShader.SetTick(animation.borderShader.GetTick() + 3)
+	}
+
+	fmt.Println(second)
 
 	hour, err := strconv.ParseInt(currentDate.Format("15"), 10, 8)
 	minute := currentDate.Format("04")
-	second, err := strconv.ParseInt(currentDate.Format("05"), 10, 8)
 
 	if err != nil {
 		fmt.Println(err)
@@ -65,6 +79,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		draw.GradientFlashing(animation.ctx)
 	} else {
 		mainLoop = time.Second * 1
+		animation.borderShader.DrawBorderShader(animation.ctx)
 		drawTime(animation)
 		draw.GradientLine(animation.ctx)
 		drawWeatherInformation(animation)
@@ -75,7 +90,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 func drawWeatherInformation(animation *animation) {
 
-	weatherData := readWeatherData(animation.weatherConfig, animation.generalConfig)
+	weatherData := readWeatherData(animation.weatherConfig)
 
 	if len(weatherData.WeatherCurrent) == 0 {
 		return
@@ -91,7 +106,7 @@ func drawWeatherInformation(animation *animation) {
 			return
 		}
 
-		iconPath := animation.generalConfig.ResourcesDir + "/img/weather_icons/ " + icon + ".png"
+		iconPath := config.App.GetResourcesDir() + "/img/weather_icons/ " + icon + ".png"
 		iconFile, err := os.Open(iconPath)
 
 		var img image.Image
@@ -140,7 +155,6 @@ func drawWeatherInformation(animation *animation) {
 }
 
 func drawTime(animation *animation) {
-
 	draw.Text(time.Now().Format("15"), 1, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
 	drawTimeSemicolon(animation)
 	draw.Text(time.Now().Format("04"), 17, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
@@ -155,10 +169,10 @@ func drawTimeSemicolon(animation *animation) {
 	displayTick = true
 }
 
-func readWeatherData(weatherConfig config.WidgetWeatherApi, general config.General) API {
+func readWeatherData(weatherConfig config.WidgetWeatherApi) API {
 	duration := time.Since(lastUpdate)
 	if duration.Minutes() > 15 {
-		go provider.ReadWeather(weatherConfig, general)
+		go provider.ReadWeather(weatherConfig)
 		lastUpdate = time.Now()
 	}
 

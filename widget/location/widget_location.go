@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/aurisl/ledmatrix/config"
+	"github.com/aurisl/ledmatrix/draw"
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/fogleman/gg"
 	"image"
 	"image/color"
@@ -11,9 +14,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-	"github.com/aurisl/ledmatrix/config"
-	"github.com/aurisl/ledmatrix/draw"
-	"github.com/aurisl/ledmatrix/matrix"
 )
 
 type (
@@ -87,27 +87,25 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		}
 
 		locationElement := location.Rows[0].LocationElement[0]
-
 		if locationElement.Status == "OK" {
 			distance = locationElement.LocationDistance.Range
 		}
 	}
 
-	text := distance
 	if distance == "" {
-		text = "n\a"
+		distance = "n\a"
 	}
 
-	draw.Text(text, 1, 18, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.TextScrolling(distance, 20, animation.ctx, color.RGBA{255, 255, 0, 255})
 
 	tick++
 
-	if tick == 10 {
+	if tick == 100 {
 		tick = 0
 		return nil, nil, io.EOF
 	}
 
-	return animation.ctx.Image(), time.After(time.Second * 1), nil
+	return animation.ctx.Image(), time.After(time.Millisecond * 100), nil
 
 }
 

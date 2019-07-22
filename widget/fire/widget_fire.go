@@ -1,12 +1,12 @@
 package fire
 
 import (
+	"github.com/aurisl/ledmatrix/command"
+	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/fogleman/gg"
 	"image"
 	"image/color"
 	"time"
-	"github.com/aurisl/ledmatrix/command"
-	"github.com/aurisl/ledmatrix/matrix"
 )
 
 type animation struct {
@@ -17,7 +17,7 @@ type animation struct {
 func Draw(toolkit *matrix.LedToolKit) {
 
 	animation := &animation{
-		ctx:           gg.NewContext(32, 32),
+		ctx: gg.NewContext(32, 32),
 	}
 
 	toolkit.PlayAnimation(animation)
