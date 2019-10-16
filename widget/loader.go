@@ -37,6 +37,8 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 				location.Draw(ledToolKit, config.App)
 			case "torrent":
 				torrent.Draw(ledToolKit, config.App)
+			case "meter":
+				torrent.Draw(ledToolKit, config.App)
 			default:
 				weather.Draw(ledToolKit, config.App)
 			}

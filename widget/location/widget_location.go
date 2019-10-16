@@ -51,15 +51,18 @@ type animation struct {
 	config config.WidgetLocation
 }
 
-func Draw(toolkit *matrix.LedToolKit,
-	config *config.AppConfig) {
+func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
 	animation := &animation{
 		ctx:    gg.NewContext(32, 32),
 		config: config.WidgetLocationConfig,
 	}
 
-	toolkit.PlayAnimation(animation)
+	err := toolkit.PlayAnimation(animation)
+
+	if err != nil {
+		fmt.Println("An error occurred while player meter animation: " + err.Error())
+	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
