@@ -49,7 +49,6 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
-
 	draw.ClearCanvas(animation.ctx)
 
 	currentDate := time.Now()
@@ -61,8 +60,6 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	if animation.borderShader.GetTick() % 32 == 0 {
 		animation.borderShader.SetTick(animation.borderShader.GetTick() + 3)
 	}
-
-	fmt.Println(second)
 
 	hour, err := strconv.ParseInt(currentDate.Format("15"), 10, 8)
 	minute := currentDate.Format("04")
