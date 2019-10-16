@@ -25,7 +25,7 @@ type animation struct {
 
 func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 	animation := &animation{
-		ctx:    gg.NewContext(32, 32),
+		ctx:  toolkit.Ctx,
 		config: config.WidgetLocationConfig,
 	}
 
