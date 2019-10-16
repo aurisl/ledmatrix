@@ -35,6 +35,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 		log.Fatalf("An error occurred while player meter animation: " + err.Error())
 	}
 
+	close(quitCh)
 	go measure()
 }
 
@@ -48,6 +49,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 }
 
 func measure() {
+	quitCh = make(chan struct{})
 	meter := new(Meter)
 	err := meter.Open("/dev/hidraw0")
 	if err != nil {

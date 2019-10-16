@@ -8,6 +8,7 @@ import (
 	"github.com/aurisl/ledmatrix/widget/fire"
 	"github.com/aurisl/ledmatrix/widget/image"
 	"github.com/aurisl/ledmatrix/widget/location"
+	"github.com/aurisl/ledmatrix/widget/meter"
 	"github.com/aurisl/ledmatrix/widget/torrent"
 	"github.com/aurisl/ledmatrix/widget/weather"
 )
@@ -38,7 +39,7 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 			case "torrent":
 				torrent.Draw(ledToolKit, config.App)
 			case "meter":
-				torrent.Draw(ledToolKit, config.App)
+				meter.Draw(ledToolKit, config.App)
 			default:
 				weather.Draw(ledToolKit, config.App)
 			}
