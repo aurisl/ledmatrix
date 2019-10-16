@@ -16,7 +16,6 @@ var (
 	mainLoop    = time.Second
 	temperature = 0.0
 	co2         = 0.0
-	quitCh      = make(chan struct{})
 )
 
 type animation struct {
@@ -44,13 +43,12 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 4, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
 	draw.GradientLine(animation.ctx)
 	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
-	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64) +"°C", 4, 30)
+	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64)+"°C", 4, 30)
 
 	return animation.ctx.Image(), time.After(mainLoop), nil
 }
 
 func Measure() {
-	quitCh = make(chan struct{})
 	meter := new(Meter)
 	err := meter.Open("/dev/hidraw0")
 	if err != nil {
@@ -59,16 +57,11 @@ func Measure() {
 	}
 
 	for {
-		select {
-		case <-quitCh:
-			return
-		case <-time.After(5 * time.Second):
-			result, err := meter.Read()
-			if err != nil {
-				log.Fatalf("Meter reader returned error: '%v'", err)
-			}
-			temperature = result.Temperature
-			co2 = float64(result.Co2)
+		result, err := meter.Read()
+		if err != nil {
+			log.Fatalf("Meter reader returned error: '%v'", err)
 		}
+		temperature = result.Temperature
+		co2 = float64(result.Co2)
 	}
 }
