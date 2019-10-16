@@ -21,7 +21,7 @@ func main() {
 	//onCanvasRender := command.StartFeed()
 	//MMatrix := matrix.NewEmulator(32, 32, onCanvasRender)
 
-	widget.Start(commandInput, MMatrix)
-
 	go meter.Measure()
+
+	widget.Start(commandInput, MMatrix)
 }
