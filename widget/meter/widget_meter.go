@@ -57,11 +57,14 @@ func Measure() {
 	}
 
 	for {
-		result, err := meter.Read()
-		if err != nil {
-			log.Fatalf("Meter reader returned error: '%v'", err)
+		select {
+		case <-time.After(10 * time.Second):
+			result, err := meter.Read()
+			if err != nil {
+				log.Fatalf("Meter reader returned error: '%v'", err)
+			}
+			temperature = result.Temperature
+			co2 = float64(result.Co2)
 		}
-		temperature = result.Temperature
-		co2 = float64(result.Co2)
 	}
 }
