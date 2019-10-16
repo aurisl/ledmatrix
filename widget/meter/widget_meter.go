@@ -42,10 +42,10 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
 
-	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 4, 30, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 1, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
 	draw.GradientLine(animation.ctx)
 	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
-	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64)+"°C", 4, 30)
+	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64) +"°C", 4, 30)
 
 	return animation.ctx.Image(), time.After(mainLoop), nil
 }
