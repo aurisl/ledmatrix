@@ -35,14 +35,13 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 		log.Fatalf("An error occurred while player meter animation: " + err.Error())
 	}
 
-	close(quitCh)
-	go measure()
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
+	draw.LoadFontFace(animation.ctx)
 
-	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 1, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 4, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
 	draw.GradientLine(animation.ctx)
 	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
 	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64) +"°C", 4, 30)
@@ -50,7 +49,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	return animation.ctx.Image(), time.After(mainLoop), nil
 }
 
-func measure() {
+func Measure() {
 	quitCh = make(chan struct{})
 	meter := new(Meter)
 	err := meter.Open("/dev/hidraw0")
