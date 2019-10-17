@@ -7,7 +7,7 @@ import (
 	"github.com/aurisl/ledmatrix/error"
 )
 
-var Renderer = matrix.CreateHardwareMatrix()
+var Renderer = CreateHardwareMatrix()
 
 func CreateHardwareMatrix() Matrix {
 	matrixConfig := CreateMatrixDefaultConfiguration()
