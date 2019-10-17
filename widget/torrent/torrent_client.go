@@ -3,8 +3,8 @@ package torrent
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -44,26 +44,26 @@ type (
 )
 
 func (entry *Entry) UnmarshalJSON(data []byte) error {
-	var v []interface{}
-	if err := json.Unmarshal(data, &v); err != nil {
-		fmt.Printf("Error whilde decoding %v\n", err)
+	var value []interface{}
+	if err := json.Unmarshal(data, &value); err != nil {
+		log.Printf("Error whilde decoding %value\n", err)
 		return err
 	}
 
-	entry.Hash = v[0].(string)
-	entry.Status = int(v[1].(float64))
-	entry.Name, _ = v[2].(string)
-	entry.Size, _ = v[3].(int)
-	entry.Progress = v[4].(float64)
-	entry.Downloaded, _ = v[5].(int)
-	entry.Uploaded, _ = v[5].(int)
-	entry.Ratio, _ = v[6].(int)
-	entry.UploadSpeed, _ = v[7].(int)
-	entry.DownloadSpeed, _ = v[8].(int)
-	entry.Eta, _ = v[9].(int)
-	entry.Eta, _ = v[10].(int)
-	entry.Label, _ = v[11].(string)
-	entry.Remaining = uint64(v[18].(float64))
+	entry.Hash = value[0].(string)
+	entry.Status = int(value[1].(float64))
+	entry.Name, _ = value[2].(string)
+	entry.Size, _ = value[3].(int)
+	entry.Progress = value[4].(float64)
+	entry.Downloaded, _ = value[5].(int)
+	entry.Uploaded, _ = value[5].(int)
+	entry.Ratio, _ = value[6].(int)
+	entry.UploadSpeed, _ = value[7].(int)
+	entry.DownloadSpeed, _ = value[8].(int)
+	entry.Eta, _ = value[9].(int)
+	entry.Eta, _ = value[10].(int)
+	entry.Label, _ = value[11].(string)
+	entry.Remaining = uint64(value[18].(float64))
 
 	return nil
 }
@@ -94,7 +94,7 @@ func (UTorrent *UTorrent) getList() (*List, error) {
 	err := json.Unmarshal(body, torrentList)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	return torrentList, nil
@@ -102,9 +102,9 @@ func (UTorrent *UTorrent) getList() (*List, error) {
 }
 func extractAuthToken(body []byte) string {
 
-	r, _ := regexp.Compile(`<div id=(?:\'|")token(?:\'|")[^>]+>(.*)</div>`)
+	regularExpression, _ := regexp.Compile(`<div id=(?:\'|")token(?:\'|")[^>]+>(.*)</div>`)
 
-	matches := r.FindAllSubmatch(body, -1)
+	matches := regularExpression.FindAllSubmatch(body, -1)
 	token := string(matches[0][1])
 
 	return token
@@ -132,21 +132,25 @@ func (UTorrent *UTorrent) makeRequest(path string, method string) []byte {
 		Timeout: time.Second * 3,
 	}
 
-	resp, err := client.Get(req.URL.String())
+	response, err := client.Get(req.URL.String())
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return []byte{}
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return []byte{}
 	}
 
-	resp.Body.Close()
+	err = response.Body.Close()
+	if err != nil {
+		log.Printf("An err occurred while closing response body '%s'", err.Error())
+		return nil
+	}
 
 	return body
 }

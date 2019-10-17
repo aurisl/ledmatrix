@@ -76,7 +76,7 @@ var fontLoaded = false
 
 func TextScrolling(text string, y float64, ctx *gg.Context, color color.RGBA) bool {
 
-	loadFontFace(ctx)
+	LoadFontFace(ctx)
 
 	text = strings.ToUpper(text)
 	totalPixels := countWordPixels(text)
@@ -95,7 +95,7 @@ func TextScrolling(text string, y float64, ctx *gg.Context, color color.RGBA) bo
 
 func Text(text string, x float64, y float64, ctx *gg.Context, color color.RGBA) {
 
-	loadFontFace(ctx)
+	LoadFontFace(ctx)
 
 	text = strings.ToUpper(text)
 
@@ -104,7 +104,7 @@ func Text(text string, x float64, y float64, ctx *gg.Context, color color.RGBA) 
 	ctx.DrawString(text, x, y)
 }
 
-func loadFontFace(ctx *gg.Context) {
+func LoadFontFace(ctx *gg.Context) {
 
 	if fontLoaded == true {
 		return

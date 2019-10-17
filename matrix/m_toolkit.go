@@ -15,9 +15,9 @@ type ToolKit struct {
 	// without calling NewToolKit
 	Canvas *Canvas
 
-	// Transform function if present is applied just before draw the image to
+	// Transform function if present is applied just before draw the gif to
 	// the Matrix, this is a small example:
-	//	tk.Transform = func(img image.Image) *image.NRGBA {
+	//	tk.Transform = func(img gif.Image) *gif.NRGBA {
 	//		return imaging.Fill(img, 64, 96, imaging.Center, imaging.Lanczos)
 	//	}
 	Transform func(img image.Image) *image.NRGBA
@@ -30,7 +30,7 @@ func NewToolKit(m Matrix) *ToolKit {
 	}
 }
 
-// PlayImage draws the given image during the given delay
+// PlayImage draws the given gif during the given delay
 func (tk *ToolKit) PlayImage(i image.Image, delay time.Duration) error {
 	start := time.Now()
 	defer func() { time.Sleep(delay - time.Since(start)) }()
@@ -47,7 +47,7 @@ type Animation interface {
 	Next() (image.Image, <-chan time.Time, error)
 }
 
-// PlayAnimation play the image during the delay returned by Next, until an err
+// PlayAnimation play the gif during the delay returned by Next, until an err
 // is returned, if io.EOF is returned, PlayAnimation finish without an error
 func (tk *ToolKit) PlayAnimation(a Animation) error {
 	var err error
@@ -72,7 +72,7 @@ func (tk *ToolKit) PlayAnimation(a Animation) error {
 	return err
 }
 
-// PlayImageUntil draws the given image until is notified to stop
+// PlayImageUntil draws the given gif until is notified to stop
 func (tk *ToolKit) PlayImageUntil(i image.Image, notify <-chan time.Time) error {
 	defer func() {
 		<-notify

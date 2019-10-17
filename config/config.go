@@ -12,6 +12,7 @@ type (
 		WidgetWeatherApiConfig    WidgetWeatherApi    `json:"widget-weather"`
 		WidgetLocationConfig      WidgetLocation      `json:"widget-location"`
 		WidgetTorrentStatusConfig WidgetTorrentStatus `json:"widget-torrent-status"`
+		WidgetCo2Meter            WidgetCo2Meter      `json:"widget-co2-meter"`
 	}
 
 	WidgetWeatherApi struct {
@@ -30,10 +31,14 @@ type (
 		Username         string `json:"username"`
 		Password         string `json:"password"`
 	}
+
+	WidgetCo2Meter struct {
+		PathToDevice string `json:"path-to-device"`
+	}
 )
 
 var App *AppConfig
-var workingDir = flag.String("working-dir", "", "Path to working directory")
+var WorkingDir = flag.String("working-dir", "", "Path to working directory")
 
 func init() {
 	flag.Parse()
@@ -41,7 +46,7 @@ func init() {
 
 func InitializeConfiguration() *AppConfig {
 
-	configFile, err := os.Open(*workingDir + "/config.json")
+	configFile, err := os.Open(*WorkingDir + "/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())
@@ -59,5 +64,5 @@ func InitializeConfiguration() *AppConfig {
 }
 
 func (e *AppConfig) GetResourcesDir() string {
-	return *workingDir + "/resources"
+	return *WorkingDir + "/resources"
 }

@@ -4,6 +4,7 @@ package matrix
 
 import (
 	"encoding/json"
+	"github.com/aurisl/ledmatrix/command"
 	"image/color"
 	"sync"
 )
@@ -16,6 +17,8 @@ type Emulator struct {
 
 	renderCallback func(pixelMap []byte)
 }
+
+var Renderer = NewEmulator(32, 32, command.StartFeed())
 
 var colorMap = make(map[int]map[int]map[string]uint32, 32)
 var mutex = &sync.Mutex{}
