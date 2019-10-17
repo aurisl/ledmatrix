@@ -9,4 +9,4 @@ fi
 #software | hardware
 RENDER_MODE=$1
 
-go build -i -tags '"$RENDER_MODE"' .
+go build -i -tags $RENDER_MODE ../

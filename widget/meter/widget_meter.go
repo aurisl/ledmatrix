@@ -57,7 +57,7 @@ func Measure() {
 	meter := new(Meter)
 	err := meter.Open(config.App.WidgetCo2Meter.PathToDevice)
 	if err != nil {
-		log.Fatalf("Could not open '%s'", config.App.WidgetCo2Meter.PathToDevice)
+		log.Printf("CO2 Meter could not open device file '%s'", config.App.WidgetCo2Meter.PathToDevice)
 		return
 	}
 
@@ -66,7 +66,7 @@ func Measure() {
 		case <-time.After(time.Second):
 			result, err := meter.Read()
 			if err != nil {
-				log.Fatalf("Meter reader returned error: '%v'", err)
+				log.Printf("CO2 Meter returned error: '%v'", err)
 			}
 			currentMeasurement = result
 		}

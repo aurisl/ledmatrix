@@ -38,7 +38,7 @@ type (
 )
 
 var App *AppConfig
-var workingDir = flag.String("working-dir", "", "Path to working directory")
+var WorkingDir = flag.String("working-dir", "", "Path to working directory")
 
 func init() {
 	flag.Parse()
@@ -46,7 +46,7 @@ func init() {
 
 func InitializeConfiguration() *AppConfig {
 
-	configFile, err := os.Open(*workingDir + "/config.json")
+	configFile, err := os.Open(*WorkingDir + "/config.json")
 
 	if err != nil {
 		errors.New("failed to read configuration file: " + err.Error())
@@ -64,5 +64,5 @@ func InitializeConfiguration() *AppConfig {
 }
 
 func (e *AppConfig) GetResourcesDir() string {
-	return *workingDir + "/resources"
+	return *WorkingDir + "/resources"
 }

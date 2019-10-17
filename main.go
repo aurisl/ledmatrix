@@ -5,6 +5,7 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget"
+	"log"
 )
 
 func main() {
@@ -16,11 +17,11 @@ func main() {
 	command.Start(commandInput)
 
 	//Hardware matrix
-	MMatrix := matrix.CreateHardwareMatrix()
+	//MMatrix := matrix.CreateHardwareMatrix()
 
 	//Software emulated matrix (display in browser)
-	//onCanvasRender := command.StartFeed()
-	//MMatrix := matrix.NewEmulator(32, 32, onCanvasRender)
+	MMatrix := matrix.NewEmulator(32, 32, command.StartFeed())
 
+	log.Println("Matrix renderer started")
 	widget.Start(commandInput, MMatrix)
 }
