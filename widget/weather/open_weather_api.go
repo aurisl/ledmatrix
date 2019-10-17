@@ -3,7 +3,6 @@ package weather
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/aurisl/ledmatrix/config"
 	"image"
 	"io"
@@ -81,7 +80,7 @@ func (w *Weather) ReadWeather(weatherConfig config.WidgetWeatherApi) {
 }
 
 func (w *Weather) updateWeatherData(weatherFileLocation string, weatherConfig config.WidgetWeatherApi) {
-	fmt.Println("Updating weather data...")
+	log.Println("Updating weather data...")
 
 	weatherApi := API{}
 
@@ -126,20 +125,25 @@ func readApi(weatherConfig config.WidgetWeatherApi) []byte {
 	q.Add("units", "metric")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := http.Get(req.URL.String())
+	response, err := http.Get(req.URL.String())
 	if err != nil {
-		fmt.Println("And error accurred when trying access weather API: " + err.Error())
+		log.Println("An error occurred when trying access weather API: " + err.Error())
 		return nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		fmt.Println("And error accurred when trying access weather API: " + err.Error())
+		log.Println("An error occurred when trying access weather API: " + err.Error())
 		return nil
 	}
 
-	resp.Body.Close()
+	err = response.Body.Close()
+
+	if err != nil {
+		log.Printf("An error occurred while closing response body '%s'", err.Error())
+		return nil
+	}
 
 	return body
 }
@@ -153,7 +157,7 @@ func (w *Weather) persistCurrentWeatherData(weatherFileLocation string) {
 	jsonData, _ := json.Marshal(w)
 
 	err := ioutil.WriteFile(weatherFileLocation, []byte(jsonData), 0644)
-	fmt.Printf("Writing weather data to %s. \n", weatherFileLocation)
+	log.Printf("Writing weather data to '%s'. \n", weatherFileLocation)
 	if err != nil {
 		panic("Failed to write weather data: " + err.Error())
 		return

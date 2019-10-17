@@ -5,7 +5,6 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget"
-	"github.com/aurisl/ledmatrix/widget/meter"
 )
 
 func main() {
@@ -16,12 +15,12 @@ func main() {
 
 	command.Start(commandInput)
 
+	//Hardware matrix
 	MMatrix := matrix.CreateHardwareMatrix()
 
+	//Software emulated matrix (display in browser)
 	//onCanvasRender := command.StartFeed()
 	//MMatrix := matrix.NewEmulator(32, 32, onCanvasRender)
-
-	go meter.Measure()
 
 	widget.Start(commandInput, MMatrix)
 }

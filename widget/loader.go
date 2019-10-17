@@ -6,7 +6,7 @@ import (
 	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget/explosion"
 	"github.com/aurisl/ledmatrix/widget/fire"
-	"github.com/aurisl/ledmatrix/widget/image"
+	"github.com/aurisl/ledmatrix/widget/gif"
 	"github.com/aurisl/ledmatrix/widget/location"
 	"github.com/aurisl/ledmatrix/widget/meter"
 	"github.com/aurisl/ledmatrix/widget/torrent"
@@ -20,6 +20,8 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput, m)
 	defer ledToolKit.Close()
 
+	go meter.Measure()
+
 	for {
 
 		select {
@@ -31,7 +33,7 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 			case "boom":
 				explosion.Draw(ledToolKit)
 			case "gif":
-				image.Draw(ledToolKit, widgetCommand.Params)
+				gif.Draw(ledToolKit, widgetCommand.Params)
 			case "fire":
 				fire.Draw(ledToolKit)
 			case "location":
@@ -39,7 +41,7 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 			case "torrent":
 				torrent.Draw(ledToolKit, config.App)
 			case "meter":
-				meter.Draw(ledToolKit, config.App)
+				meter.Draw(ledToolKit)
 			default:
 				weather.Draw(ledToolKit, config.App)
 			}

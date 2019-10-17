@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"io"
+	"log"
 	"time"
 )
 
@@ -24,7 +25,10 @@ func Draw(toolkit *matrix.LedToolKit) {
 		ctx: toolkit.Ctx,
 	}
 
-	toolkit.PlayAnimation(animation)
+	err := toolkit.PlayAnimation(animation)
+	if err != nil {
+		log.Printf("An error occurred while playing explosion animation '%s'", err.Error())
+	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {

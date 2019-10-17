@@ -2,13 +2,13 @@ package meter
 
 import (
 	"crypto/rand"
+	"github.com/pkg/errors"
 	"log"
 	"math"
 	"os"
+	"sync/atomic"
 	"syscall"
 	"unsafe"
-	"sync/atomic"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -100,8 +100,6 @@ func (m *Meter) Read() (*Measurement, error) {
 			return measurement, nil
 		}
 	}
-
-
 }
 
 func Round(x float64) float64 {

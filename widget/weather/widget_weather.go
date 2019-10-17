@@ -2,7 +2,6 @@ package weather
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/draw"
 	"github.com/aurisl/ledmatrix/matrix"
@@ -12,6 +11,7 @@ import (
 	"image/color"
 	"image/png"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -36,7 +36,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
 	borderShader := draw.NewBorderShader()
 	initialSecond, _ := strconv.ParseInt(time.Now().Format("05"), 10, 8)
-	borderShader.SetTick(uint8(initialSecond) * 2 + 10)
+	borderShader.SetTick(uint8(initialSecond)*2 + 10)
 	borderShader.SetStep(2)
 
 	animation := &animation{
@@ -54,10 +54,10 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	currentDate := time.Now()
 	second, err := strconv.ParseInt(currentDate.Format("05"), 10, 8)
 	if second == 0 {
-		animation.borderShader.SetTick( 4) //Reset tick, to correct path of second border
+		animation.borderShader.SetTick(4) //Reset tick, to correct path of second border
 	}
 
-	if animation.borderShader.GetTick() % 32 == 0 {
+	if animation.borderShader.GetTick()%32 == 0 {
 		animation.borderShader.SetTick(animation.borderShader.GetTick() + 3)
 	}
 
@@ -65,7 +65,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	minute := currentDate.Format("04")
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	if hour >= 23 || hour < 07 {

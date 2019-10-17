@@ -6,8 +6,8 @@ import (
 	"image/draw"
 )
 
-// Canvas is a image.Image representation of a WS281x matrix, it implements
-// image.Image interface and can be used with draw.Draw for example
+// Canvas is a gif.Image representation of a WS281x matrix, it implements
+// gif.Image interface and can be used with draw.Draw for example
 type Canvas struct {
 	w, h   int
 	m      Matrix

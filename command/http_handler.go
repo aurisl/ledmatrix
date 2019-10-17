@@ -22,7 +22,7 @@ func Start(commandInput chan WidgetCommand) {
 		http.HandleFunc("/exec", func(w http.ResponseWriter, r *http.Request) {
 
 			widgetName := html.EscapeString(r.URL.Query().Get("widget"))
-			fmt.Fprintf(w, "Command %q received. ", widgetName)
+			fmt.Fprintf(w, "Executing '%q' widget. ", widgetName)
 
 			commandInput <- WidgetCommand{
 				Name:   widgetName,

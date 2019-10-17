@@ -12,6 +12,7 @@ type (
 		WidgetWeatherApiConfig    WidgetWeatherApi    `json:"widget-weather"`
 		WidgetLocationConfig      WidgetLocation      `json:"widget-location"`
 		WidgetTorrentStatusConfig WidgetTorrentStatus `json:"widget-torrent-status"`
+		WidgetCo2Meter            WidgetCo2Meter      `json:"widget-co2-meter"`
 	}
 
 	WidgetWeatherApi struct {
@@ -29,6 +30,10 @@ type (
 		TorrentWebApiUrl string `json:"torrent-web-api-url"`
 		Username         string `json:"username"`
 		Password         string `json:"password"`
+	}
+
+	WidgetCo2Meter struct {
+		PathToDevice string `json:"path-to-device"`
 	}
 )
 

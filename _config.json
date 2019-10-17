@@ -12,5 +12,8 @@
     "torrent-web-api-url": "",
     "username": "",
     "password": ""
+  },
+  "widget-co2-meter": {
+    "path-to-device": "/dev/hidraw0"
   }
 }

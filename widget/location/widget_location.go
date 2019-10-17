@@ -3,7 +3,6 @@ package location
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/draw"
 	"github.com/aurisl/ledmatrix/matrix"
@@ -12,6 +11,7 @@ import (
 	"image/color"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -61,7 +61,7 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 	err := toolkit.PlayAnimation(animation)
 
 	if err != nil {
-		fmt.Println("An error occurred while player meter animation: " + err.Error())
+		log.Println("An error occurred while playing location animation: " + err.Error())
 	}
 }
 
@@ -78,7 +78,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 		err := decoder.Decode(&location)
 		if err != nil {
-			fmt.Println("Error decoding current location from google API: " + err.Error())
+			log.Println("Error decoding current location from google API: " + err.Error())
 		}
 
 		if len(location.Rows) == 0 {
@@ -99,7 +99,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		distance = "n\a"
 	}
 
-	draw.TextScrolling(distance, 20, animation.ctx, color.RGBA{255, 255, 0, 255})
+	draw.TextScrolling(distance, 20, animation.ctx, color.RGBA{R: 255, G: 255, A: 255})
 
 	tick++
 
@@ -116,7 +116,7 @@ func initializeLocationCanvas(animation *animation) {
 
 	animation.ctx.SetRGB(0, 0, 0)
 	animation.ctx.Clear()
-	animation.ctx.SetColor(color.RGBA{255, 255, 255, 255})
+	animation.ctx.SetColor(color.RGBA{R: 255, G: 255, B: 255, A: 255})
 	animation.ctx.SetLineWidth(1)
 	animation.ctx.Stroke()
 }
@@ -130,14 +130,14 @@ func readDistance(locationConfig config.WidgetLocation) []byte {
 
 	cCord := readGeo(locationConfig)
 
-	response := bytes.NewReader(cCord)
-	decoder := json.NewDecoder(response)
+	stationaryCoordinatesResponse := bytes.NewReader(cCord)
+	decoder := json.NewDecoder(stationaryCoordinatesResponse)
 
 	locationCord := Coordinates{}
 
 	err := decoder.Decode(&locationCord)
 	if err != nil {
-		fmt.Println("Error decoding current location: " + err.Error())
+		log.Println("Error decoding current location: " + err.Error())
 		return nil
 	}
 
@@ -145,41 +145,49 @@ func readDistance(locationConfig config.WidgetLocation) []byte {
 	q.Add("key", locationConfig.GoogleMapsToken)
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := http.Get(req.URL.String())
+	googleApiResponse, err := http.Get(req.URL.String())
 	if err != nil {
-		fmt.Println("And error accurred when trying access google API: " + err.Error())
+		log.Println("An error occurred when trying access google API: " + err.Error())
 		return nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(googleApiResponse.Body)
 
 	if err != nil {
-		fmt.Println("And error accurred when trying access google API: " + err.Error())
+		log.Println("An error occurred when trying access google API: " + err.Error())
 		return nil
 	}
 
-	resp.Body.Close()
+	err = googleApiResponse.Body.Close()
+	if err != nil {
+		log.Printf("An error occurred while closing stationaryCoordinatesResponse body '%s'", err.Error())
+		return nil
+	}
 
 	return body
 }
 
 func readGeo(locationConfig config.WidgetLocation) []byte {
-	req, _ := http.NewRequest("GET", locationConfig.LocationProviderUrl, nil)
+	request, _ := http.NewRequest("GET", locationConfig.LocationProviderUrl, nil)
 
-	resp, err := http.Get(req.URL.String())
+	response, err := http.Get(request.URL.String())
 	if err != nil {
-		fmt.Println("And error accurred when trying to get current location: " + err.Error())
+		log.Println("An error occurred when trying to get current location: " + err.Error())
 		return nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		fmt.Println("And error accurred when reading current location response: " + err.Error())
+		log.Println("An error occurred when reading current location response: " + err.Error())
 		return nil
 	}
 
-	resp.Body.Close()
+	err = response.Body.Close()
+	if err != nil {
+		log.Printf("An error occurred while closing response body '%s'", err.Error())
+		return nil
+	}
 
 	return body
 }

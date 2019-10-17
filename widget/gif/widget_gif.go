@@ -1,4 +1,4 @@
-package image
+package gif
 
 import (
 	"github.com/aurisl/ledmatrix/matrix"

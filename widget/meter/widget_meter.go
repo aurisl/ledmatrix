@@ -13,58 +13,62 @@ import (
 )
 
 var (
-	mainLoop    = time.Second
-	temperature = 0.0
-	co2         = 0.0
+	mainLoop           = time.Second
+	currentMeasurement = &Measurement{}
 )
 
 type animation struct {
-	ctx    *gg.Context
-	config config.WidgetLocation
+	ctx *gg.Context
 }
 
-func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
-	animation := &animation{
-		ctx:  toolkit.Ctx,
-		config: config.WidgetLocationConfig,
-	}
+func Draw(toolkit *matrix.LedToolKit) {
+	animation := &animation{ctx: toolkit.Ctx}
 
 	err := toolkit.PlayAnimation(animation)
 	if err != nil {
 		log.Fatalf("An error occurred while player meter animation: " + err.Error())
 	}
-
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
-	draw.LoadFontFace(animation.ctx)
 
-	draw.Text(strconv.FormatFloat(co2, 'f', 0, 64), 4, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.Text(strconv.Itoa(currentMeasurement.Co2), 4, 13, animation.ctx, createCo2Color(currentMeasurement.Co2))
 	draw.GradientLine(animation.ctx)
-	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
-	animation.ctx.DrawString(strconv.FormatFloat(temperature, 'f', 0, 64)+"°C", 4, 30)
+	animation.ctx.SetColor(color.RGBA{R: 255, G: 255, A: 255})
+	animation.ctx.DrawString(strconv.FormatFloat(currentMeasurement.Temperature, 'f', 0, 64)+"°C", 4, 30)
 
 	return animation.ctx.Image(), time.After(mainLoop), nil
 }
 
+func createCo2Color(co2 int) color.RGBA {
+	if co2 <= 800 {
+		return color.RGBA{G: 255, A: 255}
+	}
+
+	if co2 > 800 && co2 <= 1200 {
+		return color.RGBA{R: 255, G: 255, A: 255}
+	}
+
+	return color.RGBA{R: 255, A: 255}
+}
+
 func Measure() {
 	meter := new(Meter)
-	err := meter.Open("/dev/hidraw0")
+	err := meter.Open(config.App.WidgetCo2Meter.PathToDevice)
 	if err != nil {
-		log.Fatalf("Could not open '/dev/hidraw0'")
+		log.Fatalf("Could not open '%s'", config.App.WidgetCo2Meter.PathToDevice)
 		return
 	}
 
 	for {
 		select {
-		case <-time.After(10 * time.Second):
+		case <-time.After(time.Second):
 			result, err := meter.Read()
 			if err != nil {
 				log.Fatalf("Meter reader returned error: '%v'", err)
 			}
-			temperature = result.Temperature
-			co2 = float64(result.Co2)
+			currentMeasurement = result
 		}
 	}
 }

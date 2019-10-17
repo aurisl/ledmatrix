@@ -6,6 +6,7 @@ import (
 	"github.com/fogleman/gg"
 	"image"
 	"image/color"
+	"log"
 	"time"
 )
 
@@ -20,12 +21,15 @@ func Draw(toolkit *matrix.LedToolKit) {
 		ctx: gg.NewContext(32, 32),
 	}
 
-	toolkit.PlayAnimation(animation)
+	err := toolkit.PlayAnimation(animation)
+	if err != nil {
+		log.Printf("An error occurred while playing wire animation '%s'", err.Error())
+	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
-	animation.ctx.SetColor(color.RGBA{0, 0, 0, 255})
+	animation.ctx.SetColor(color.RGBA{A: 255})
 	animation.ctx.Clear()
 
 	YRand := 10
@@ -45,9 +49,9 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		for y := YRand; y < 32; y++ {
 
 			if y > 20 {
-				animation.ctx.SetColor(color.RGBA{249, 166, 0, 255})
+				animation.ctx.SetColor(color.RGBA{R: 249, G: 166, A: 255})
 			} else {
-				animation.ctx.SetColor(color.RGBA{255, uint8(10 + y), uint8(10 + y), 255})
+				animation.ctx.SetColor(color.RGBA{R: 255, G: uint8(10 + y), B: uint8(10 + y), A: 255})
 			}
 
 			animation.ctx.SetPixel(x, y)
