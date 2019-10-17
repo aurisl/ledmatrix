@@ -2,12 +2,11 @@
 
 Application to control AdaFruit LED Matrix. The project made on basis of https://www.adafruit.com/product/2345
 
-
 ## Installing
 
 git clone git@github.com:aurisl/ledmatrix.git
 
-`./build.sh harware` //or software if building for emulator
+`./build.sh hardware` //or software if building for emulator
 
 @Todo write needed C binding modifications
 
@@ -16,7 +15,7 @@ Add init.d service
 ....
 ```
 
-Run on raspberry startup ....
+Run on raspberryPI startup ....
 
 ## Hardware
 
@@ -25,7 +24,7 @@ To communicate with matrix it is using modified "github.com/mcuadros/go-rpi-rgb-
 
 ## Software (emulated)
 
-The software emulated mode does not need hardware, it can run all animations on your browser. 
+The software emulated mode does not need hardware, it can run all animations on your browser. (Make sure you build binary with software flag.)
 Start application and open http://localhost:8081 in your browser. You should see matrix rendered on canvas.
 
 ## Widgets

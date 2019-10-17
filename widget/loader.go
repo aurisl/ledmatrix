@@ -5,7 +5,6 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget/explosion"
-	"github.com/aurisl/ledmatrix/widget/fire"
 	"github.com/aurisl/ledmatrix/widget/gif"
 	"github.com/aurisl/ledmatrix/widget/location"
 	"github.com/aurisl/ledmatrix/widget/meter"
@@ -34,8 +33,6 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 				explosion.Draw(ledToolKit)
 			case "gif":
 				gif.Draw(ledToolKit, widgetCommand.Params)
-			case "fire":
-				fire.Draw(ledToolKit)
 			case "location":
 				location.Draw(ledToolKit, config.App)
 			case "torrent":
