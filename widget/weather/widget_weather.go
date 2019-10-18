@@ -5,6 +5,7 @@ import (
 	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/draw"
 	"github.com/aurisl/ledmatrix/matrix"
+	"github.com/aurisl/ledmatrix/widget/meter"
 	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
 	"image"
@@ -45,7 +46,10 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 		borderShader:  borderShader,
 	}
 
-	toolkit.PlayAnimation(animation)
+	err := toolkit.PlayAnimation(animation)
+	if err != nil {
+		log.Println("An error occurred while player weather animation: " + err.Error())
+	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -68,7 +72,14 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		log.Println(err)
 	}
 
-	if hour >= 23 || hour < 07 {
+	if meter.CurrentMeasurement != nil && meter.CurrentMeasurement.Co2 >= 1000 {
+		draw.RedScreen(animation.ctx, loopTick)
+		draw.Text(strconv.Itoa(meter.CurrentMeasurement.Co2), 4, 20, animation.ctx, color.RGBA{R: 255, G: 255, A: 255})
+		loopTick++
+		return animation.ctx.Image(), time.After(time.Millisecond * 50), nil
+	}
+
+	 if hour >= 23 || hour < 07 {
 		animation.ctx.SetRGB(0, 0, 0)
 		animation.ctx.Clear()
 	} else if minute == "00" && second < 5 {
@@ -93,7 +104,7 @@ func drawWeatherInformation(animation *animation) {
 		return
 	}
 
-	if loopTick == 3 {
+	if loopTick >= 3 {
 
 		loopTick = 0
 		icon := weatherData.WeatherCurrent[0].Icon

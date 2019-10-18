@@ -14,6 +14,21 @@ var upgrade = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
 var currentPixelMap []byte
 var pushPixelUpdate bool
 
+func StartFeed() func(pixelMap []byte) {
+
+	onCanvasRender := func(pixelMap []byte) {
+		pushPixelUpdate = isUpdated(pixelMap)
+		currentPixelMap = pixelMap
+	}
+
+	go func() {
+		http.HandleFunc("/pixel", feedPixels)
+		log.Fatal(http.ListenAndServe(":8082", nil))
+	}()
+
+	return onCanvasRender
+}
+
 func feedPixels(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrade.Upgrade(w, r, nil)
 	if err != nil {
@@ -28,21 +43,6 @@ func feedPixels(w http.ResponseWriter, r *http.Request) {
 		}
 		time.Sleep(time.Millisecond * 10)
 	}
-}
-
-func StartFeed() func(pixelMap []byte) {
-
-	onCanvasRender := func(pixelMap []byte) {
-		pushPixelUpdate = isUpdated(pixelMap)
-		currentPixelMap = pixelMap
-	}
-
-	go func() {
-		http.HandleFunc("/pixel", feedPixels)
-		log.Fatal(http.ListenAndServe(":8082", nil))
-	}()
-
-	return onCanvasRender
 }
 
 func isUpdated(pixelMap []byte) bool {

@@ -14,7 +14,7 @@ import (
 
 var (
 	mainLoop           = time.Second
-	currentMeasurement = &Measurement{}
+	CurrentMeasurement = &Measurement{}
 )
 
 type animation struct {
@@ -26,17 +26,17 @@ func Draw(toolkit *matrix.LedToolKit) {
 
 	err := toolkit.PlayAnimation(animation)
 	if err != nil {
-		log.Fatalf("An error occurred while player meter animation: " + err.Error())
+		log.Println("An error occurred while player meter animation: " + err.Error())
 	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	draw.ClearCanvas(animation.ctx)
 
-	draw.Text(strconv.Itoa(currentMeasurement.Co2), 4, 13, animation.ctx, createCo2Color(currentMeasurement.Co2))
+	draw.Text(strconv.Itoa(CurrentMeasurement.Co2), 4, 13, animation.ctx, createCo2Color(CurrentMeasurement.Co2))
 	draw.GradientLine(animation.ctx)
 	animation.ctx.SetColor(color.RGBA{R: 255, G: 255, A: 255})
-	animation.ctx.DrawString(strconv.FormatFloat(currentMeasurement.Temperature, 'f', 0, 64)+"°C", 4, 30)
+	animation.ctx.DrawString(strconv.FormatFloat(CurrentMeasurement.Temperature, 'f', 0, 64)+"°C", 4, 30)
 
 	return animation.ctx.Image(), time.After(mainLoop), nil
 }
@@ -47,7 +47,7 @@ func createCo2Color(co2 int) color.RGBA {
 	}
 
 	if co2 > 800 && co2 <= 1200 {
-		return color.RGBA{R: 255, G: 255, A: 255}
+		return color.RGBA{R: 255, G: 150, A: 255}
 	}
 
 	return color.RGBA{R: 255, A: 255}
@@ -68,7 +68,7 @@ func Measure() {
 			if err != nil {
 				log.Printf("CO2 Meter returned error: '%v'", err)
 			}
-			currentMeasurement = result
+			CurrentMeasurement = result
 		}
 	}
 }

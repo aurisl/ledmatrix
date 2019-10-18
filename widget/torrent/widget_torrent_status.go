@@ -9,6 +9,7 @@ import (
 	"image"
 	"image/color"
 	"io"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -19,7 +20,7 @@ type animation struct {
 	reloadTorrent      bool
 	torrentInformation string
 	torrentProgress    string
-	tick               int64
+	tick               int
 	clientActive       bool
 	borderShader       *draw.BorderShared
 	percentage         float64
@@ -41,7 +42,10 @@ func Draw(ledTooKit *matrix.LedToolKit,
 		config:             config.WidgetTorrentStatusConfig,
 	}
 
-	ledTooKit.PlayAnimation(animation)
+	err := ledTooKit.PlayAnimation(animation)
+	if err != nil {
+		log.Println("An error occurred while player torrent animation: " + err.Error())
+	}
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -57,7 +61,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	}
 
 	if animation.clientActive == true && animation.torrentProgress == "" {
-		drawRedScreen(animation)
+		draw.RedScreen(animation.ctx, animation.tick)
 		return animation.ctx.Image(), time.After(time.Millisecond * 50), nil
 	}
 
@@ -114,14 +118,4 @@ func drawTorrentInformation(animation *animation) bool {
 	animation.reloadTorrent = false
 
 	return true
-}
-
-func drawRedScreen(animation *animation) {
-
-	if animation.tick%10 == 0 {
-		animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
-	} else {
-		animation.ctx.SetColor(color.RGBA{0, 0, 0, 255})
-	}
-	animation.ctx.Clear()
 }
