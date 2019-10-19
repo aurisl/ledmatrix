@@ -72,7 +72,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		log.Println(err)
 	}
 
-	if meter.CurrentMeasurement != nil && meter.CurrentMeasurement.Co2 >= 1000 {
+	if meter.CurrentMeasurement != nil && meter.CurrentMeasurement.Co2 >= 1200 {
 		draw.RedScreen(animation.ctx, loopTick)
 		draw.Text(strconv.Itoa(meter.CurrentMeasurement.Co2), 4, 20, animation.ctx, color.RGBA{R: 255, G: 255, A: 255})
 		loopTick++
