@@ -2,7 +2,7 @@
 
 Application to control AdaFruit LED Matrix. The project made on basis of https://www.adafruit.com/product/2345
 
-(https://imgur.com/SNnKrW9)
+![](https://imgur.com/SNnKrW9)
 
 ## Installing
 
