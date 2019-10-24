@@ -14,6 +14,7 @@
     "password": ""
   },
   "widget-co2-meter": {
-    "path-to-device": "/dev/hidraw0"
+    "path-to-device": "/dev/hidraw0",
+    "warning-threshold": 1200
   }
 }

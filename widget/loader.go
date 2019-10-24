@@ -2,7 +2,6 @@ package widget
 
 import (
 	"github.com/aurisl/ledmatrix/command"
-	"github.com/aurisl/ledmatrix/config"
 	"github.com/aurisl/ledmatrix/matrix"
 	"github.com/aurisl/ledmatrix/widget/explosion"
 	"github.com/aurisl/ledmatrix/widget/gif"
@@ -19,8 +18,10 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 	ledToolKit := matrix.NewLedToolkit(commandInput, commandOutput, m)
 	defer ledToolKit.Close()
 
+	//Start CO2 meter in background and read data from device
 	go meter.Measure()
 
+	//The main drawing loop
 	for {
 
 		select {
@@ -28,22 +29,22 @@ func Start(commandInput <-chan command.WidgetCommand, m matrix.Matrix) {
 
 			switch widgetCommand.Name {
 			case "weather":
-				weather.Draw(ledToolKit, config.App)
+				weather.Draw(ledToolKit)
 			case "boom":
 				explosion.Draw(ledToolKit)
 			case "gif":
 				gif.Draw(ledToolKit, widgetCommand.Params)
 			case "location":
-				location.Draw(ledToolKit, config.App)
+				location.Draw(ledToolKit)
 			case "torrent":
-				torrent.Draw(ledToolKit, config.App)
+				torrent.Draw(ledToolKit)
 			case "meter":
 				meter.Draw(ledToolKit)
 			default:
-				weather.Draw(ledToolKit, config.App)
+				weather.Draw(ledToolKit)
 			}
 		default:
-			weather.Draw(ledToolKit, config.App)
+			weather.Draw(ledToolKit)
 		}
 
 	}

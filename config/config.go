@@ -2,8 +2,8 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
+	"log"
 	"os"
 )
 
@@ -33,7 +33,8 @@ type (
 	}
 
 	WidgetCo2Meter struct {
-		PathToDevice string `json:"path-to-device"`
+		PathToDevice     string `json:"path-to-device"`
+		WarningThreshold int  `json:"warning-threshold"`
 	}
 )
 
@@ -47,18 +48,16 @@ func init() {
 func InitializeConfiguration() *AppConfig {
 
 	configFile, err := os.Open(*WorkingDir + "/config.json")
-
 	if err != nil {
-		errors.New("failed to read configuration file: " + err.Error())
+		log.Fatal("An error occurred while reading configuration file: " + err.Error())
 	}
 	decoder := json.NewDecoder(configFile)
 
 	App = &AppConfig{}
 
 	err = decoder.Decode(App)
-
 	if err != nil {
-		errors.New("Error decoding configuration: " + err.Error())
+		log.Fatal("An error occurred while decoding configuration file: " + err.Error())
 	}
 	return App
 }

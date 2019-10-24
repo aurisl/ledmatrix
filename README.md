@@ -83,6 +83,7 @@ Configuration "widget-co2-meter"
 | Field         | Value
 |---------------|-------------
 | path-to-device | The path to device driver for example "/dev/hidraw0"
+| warning-threshold | The CO2 level warning threshold, the integer value from what level to display alert
 
 
 ### Location

@@ -63,7 +63,7 @@ func (m *Meter) ioctl() error {
 	_, _, err := syscall.Syscall(syscall.SYS_IOCTL, m.file.Fd(), hidiocsfeature9, uintptr(unsafe.Pointer(&data)))
 
 	if err != 0 {
-		return errors.Wrap(syscall.Errno(err), "ioctl failed")
+		return errors.Wrap(err, "ioctl failed")
 	}
 	return nil
 }

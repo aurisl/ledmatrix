@@ -56,7 +56,7 @@ func (c *Canvas) position(x, y int) int {
 
 // Clear set all the LEDs on the matrix with color.Black
 func (c *Canvas) Clear() error {
-	draw.Draw(c, c.Bounds(), &image.Uniform{color.Black}, image.ZP, draw.Src)
+	draw.Draw(c, c.Bounds(), &image.Uniform{C: color.Black}, image.ZP, draw.Src)
 	return c.m.Render()
 }
 

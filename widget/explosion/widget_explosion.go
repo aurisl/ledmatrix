@@ -58,7 +58,7 @@ func explosion(animation *animation) {
 		renderTick = 0
 	}
 
-	animation.ctx.SetColor(color.RGBA{255, 0, 0, 255})
+	animation.ctx.SetColor(color.RGBA{R: 255, A: 255})
 
 	green := 255 - renderTick*14
 	color1 := color.RGBA{R: 255, G: uint8(green), B: 0, A: 255}

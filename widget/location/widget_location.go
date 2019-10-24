@@ -48,14 +48,12 @@ var (
 
 type animation struct {
 	ctx    *gg.Context
-	config config.WidgetLocation
 }
 
-func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
+func Draw(toolkit *matrix.LedToolKit) {
 
 	animation := &animation{
 		ctx:    gg.NewContext(32, 32),
-		config: config.WidgetLocationConfig,
 	}
 
 	err := toolkit.PlayAnimation(animation)
@@ -69,7 +67,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 	initializeLocationCanvas(animation)
 
 	if tick == 0 {
-		googleResponse := readDistance(animation.config)
+		googleResponse := readDistance(config.App.WidgetLocationConfig)
 
 		response := bytes.NewReader(googleResponse)
 		decoder := json.NewDecoder(response)

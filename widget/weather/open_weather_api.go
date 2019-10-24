@@ -153,10 +153,8 @@ func (w *Weather) SetSelectedImage(img image.Image, ico string) {
 }
 
 func (w *Weather) persistCurrentWeatherData(weatherFileLocation string) {
-
 	jsonData, _ := json.Marshal(w)
-
-	err := ioutil.WriteFile(weatherFileLocation, []byte(jsonData), 0644)
+	err := ioutil.WriteFile(weatherFileLocation, jsonData, 0644)
 	log.Printf("Writing weather data to '%s'. \n", weatherFileLocation)
 	if err != nil {
 		panic("Failed to write weather data: " + err.Error())

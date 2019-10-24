@@ -29,11 +29,10 @@ var (
 
 type animation struct {
 	ctx           *gg.Context
-	weatherConfig config.WidgetWeatherApi
 	borderShader  *draw.BorderShared
 }
 
-func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
+func Draw(toolkit *matrix.LedToolKit) {
 
 	borderShader := draw.NewBorderShader()
 	initialSecond, _ := strconv.ParseInt(time.Now().Format("05"), 10, 8)
@@ -42,7 +41,6 @@ func Draw(toolkit *matrix.LedToolKit, config *config.AppConfig) {
 
 	animation := &animation{
 		ctx:           toolkit.Ctx,
-		weatherConfig: config.WidgetWeatherApiConfig,
 		borderShader:  borderShader,
 	}
 
@@ -72,7 +70,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 		log.Println(err)
 	}
 
-	if meter.CurrentMeasurement != nil && meter.CurrentMeasurement.Co2 >= 1200 {
+	if meter.CurrentMeasurement != nil && meter.CurrentMeasurement.Co2 >= config.App.WidgetCo2Meter.WarningThreshold {
 		draw.RedScreen(animation.ctx, loopTick)
 		draw.Text(strconv.Itoa(meter.CurrentMeasurement.Co2), 4, 20, animation.ctx, color.RGBA{R: 255, G: 255, A: 255})
 		loopTick++
@@ -98,8 +96,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 
 func drawWeatherInformation(animation *animation) {
 
-	weatherData := readWeatherData(animation.weatherConfig)
-
+	weatherData := readWeatherData()
 	if len(weatherData.WeatherCurrent) == 0 {
 		return
 	}
@@ -114,24 +111,29 @@ func drawWeatherInformation(animation *animation) {
 			return
 		}
 
-		iconPath := config.App.GetResourcesDir() + "/img/weather_icons/ " + icon + ".png"
+		iconPath := config.App.GetResourcesDir() + "/img/weather_icons/" + icon + ".png"
 		iconFile, err := os.Open(iconPath)
 
 		var img image.Image
 
 		if err != nil {
 			resp, err := http.Get("http://openweathermap.org/img/w/" + icon + ".png")
-
 			if err != nil {
+				log.Println("An error occurred while sending request to open weather api: " + err.Error())
 				return
 			}
 
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
+				log.Println("An error occurred while reading body from open weather api: " + err.Error())
 				return
 			}
 
-			resp.Body.Close()
+			err = resp.Body.Close()
+			if err != nil {
+				log.Println("An error occurred while closing open weather api request: " + err.Error())
+				return
+			}
 
 			response := bytes.NewReader(body)
 
@@ -143,8 +145,15 @@ func drawWeatherInformation(animation *animation) {
 			img = resize.Resize(25, 25, imgOriginal, resize.Lanczos3)
 
 			buff := new(bytes.Buffer)
-			png.Encode(buff, img)
-			ioutil.WriteFile(iconPath, buff.Bytes(), 0777)
+			err = png.Encode(buff, img)
+			if err != nil {
+				log.Println("An error occurred while decoding open api weather icon" + err.Error())
+				return
+			}
+			err = ioutil.WriteFile(iconPath, buff.Bytes(), 0777)
+			if err != nil {
+				log.Println("An error occurred while writing open api weather icon" + err.Error())
+			}
 
 		} else {
 			img, _, _ = image.Decode(iconFile)
@@ -156,31 +165,31 @@ func drawWeatherInformation(animation *animation) {
 		return
 	}
 
-	animation.ctx.SetColor(color.RGBA{255, 255, 0, 255})
+	animation.ctx.SetColor(color.RGBA{R: 255, G: 255, A: 255})
 	animation.ctx.DrawString(strconv.FormatFloat(weatherData.WeatherMain.Temp, 'f', 0, 64)+"°C", 4, 30)
 	loopTick++
 
 }
 
 func drawTime(animation *animation) {
-	draw.Text(time.Now().Format("15"), 1, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.Text(time.Now().Format("15"), 1, 13, animation.ctx, color.RGBA{R: 255, A: 255})
 	drawTimeSemicolon(animation)
-	draw.Text(time.Now().Format("04"), 17, 13, animation.ctx, color.RGBA{255, 0, 0, 255})
+	draw.Text(time.Now().Format("04"), 17, 13, animation.ctx, color.RGBA{R: 255, A: 255})
 }
 
 func drawTimeSemicolon(animation *animation) {
 	if displayTick == true {
-		draw.Text(":", 14, 12, animation.ctx, color.RGBA{255, 0, 0, 255})
+		draw.Text(":", 14, 12, animation.ctx, color.RGBA{R: 255, A: 255})
 		displayTick = false
 		return
 	}
 	displayTick = true
 }
 
-func readWeatherData(weatherConfig config.WidgetWeatherApi) API {
+func readWeatherData() API {
 	duration := time.Since(lastUpdate)
 	if duration.Minutes() > 15 {
-		go provider.ReadWeather(weatherConfig)
+		go provider.ReadWeather(config.App.WidgetWeatherApiConfig)
 		lastUpdate = time.Now()
 	}
 

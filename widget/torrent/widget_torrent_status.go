@@ -24,11 +24,9 @@ type animation struct {
 	clientActive       bool
 	borderShader       *draw.BorderShared
 	percentage         float64
-	config             config.WidgetTorrentStatus
 }
 
-func Draw(ledTooKit *matrix.LedToolKit,
-	config *config.AppConfig) {
+func Draw(ledTooKit *matrix.LedToolKit) {
 
 	animation := &animation{
 		ctx:                ledTooKit.Ctx,
@@ -39,7 +37,6 @@ func Draw(ledTooKit *matrix.LedToolKit,
 		tick:               0,
 		borderShader:       draw.NewBorderShader(),
 		percentage:         0,
-		config:             config.WidgetTorrentStatusConfig,
 	}
 
 	err := ledTooKit.PlayAnimation(animation)
@@ -77,7 +74,7 @@ func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
 }
 func drawScrollingTorrentText(animation *animation) {
 
-	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx, color.RGBA{255, 255, 0, 255})
+	isScrollingCompleted := draw.TextScrolling(animation.torrentInformation, 12, animation.ctx, color.RGBA{R: 255, G: 255, A: 255})
 	if isScrollingCompleted == true {
 		animation.reloadTorrent = true
 	}
@@ -86,9 +83,9 @@ func drawScrollingTorrentText(animation *animation) {
 func drawTorrentInformation(animation *animation) bool {
 
 	UTorrentClient, err := NewUTorrentClient(
-		animation.config.TorrentWebApiUrl,
-		animation.config.Username,
-		animation.config.Password)
+		config.App.WidgetTorrentStatusConfig.TorrentWebApiUrl,
+		config.App.WidgetTorrentStatusConfig.Username,
+		config.App.WidgetTorrentStatusConfig.Password)
 
 	if err != nil {
 		return false
