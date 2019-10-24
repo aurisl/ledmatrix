@@ -2,35 +2,32 @@
 
 Application to control AdaFruit LED Matrix. The project made on basis of https://www.adafruit.com/product/2345
 
+![Emulated](https://d1sz9tkli0lfjq.cloudfront.net/items/0A0z1B3y320i1M3p2F1f/Screen%20Recording%202019-10-24%20at%2010.54%20AM.gif, "Emulated")
+
 ## Installing
 
-git clone git@github.com:aurisl/ledmatrix.git
-
-`./build.sh hardware` //or software if building for emulator
-
-@Todo write needed C binding modifications
-
-Add init.d service
-```
-....
-```
-
-Run on raspberryPI startup ....
+`git clone git@github.com:aurisl/ledmatrix.git`
 
 ## Hardware
 
 The hardware mode uses Ada Fruit RGB matrix together with their provide hat for raspberryPI.
-To communicate with matrix it is using modified "github.com/mcuadros/go-rpi-rgb-led-matrix" (@Todo fork project to add modifications)
+To communicate with matrix it is using modified "github.com/mcuadros/go-rpi-rgb-led-matrix"
+
+@TODO Write needed C binding/mcuadros library modifications, setup for RaspberryPI
 
 ## Software (emulated)
 
-The software emulated mode does not need hardware, it can run all animations on your browser. (Make sure you build binary with software flag.)
-Start application and open http://localhost:8081 in your browser. You should see matrix rendered on canvas.
+The software emulated mode does not need hardware, it can run all animations in WEB browser. (Make sure you build it with "software" flag.)
+
+Go to `deployment/` then build and run
+`./build.sh software && ./ledmatrix --working-dir=$PWD/../`
+
+This will start in emulator mode, open it in browser `http://localhost:8081`.
 
 ## Widgets
 
 There are number of widgets which allows you to display certain information on matrix. Like weather, play gif etc.
-The application exposes HTTP endpoint under "http://localhost:8081/exec?widget=weather" from which widgets can be invoked.
+The application exposes HTTP endpoint under `http://localhost:8081/exec?widget=weather` from which widgets can be invoked.
 
 ### Weather
 
