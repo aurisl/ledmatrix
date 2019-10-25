@@ -1,0 +1,8 @@
+/var/log/led-matrix.log {
+    weekly
+    rotate 4
+    compress
+
+    delaycompress
+    missingok
+}

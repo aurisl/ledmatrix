@@ -11,9 +11,9 @@ Application to control AdaFruit LED Matrix. The project made on basis of https:/
 ## Hardware
 
 The hardware mode uses Ada Fruit RGB matrix together with their provide hat for raspberryPI.
-To communicate with matrix it is using modified "github.com/mcuadros/go-rpi-rgb-led-matrix"
-
-@TODO Write needed C binding/mcuadros library modifications, setup for RaspberryPI
+To communicate with matrix it is using "https://github.com/mcuadros/go-rpi-rgb-led-matrix", read install instructions there.
+Before compiling enable AdaFruit Hat optimization.
+In file `$GOPATH/src/github.com/mcuadros/go-rpi-rgb-led-matrix/vendor/rpi-rgb-led-matrix/lib/Makefile` set `HARDWARE_DESC?=adafruit-hat-pwm`.
 
 ## Software (emulated)
 
