@@ -10,11 +10,14 @@ import (
 	"log"
 	"strconv"
 	"time"
+	"github.com/rcrowley/go-metrics"
 )
 
 var (
 	mainLoop           = time.Second
 	CurrentMeasurement = &Measurement{}
+	temperatureCounter = metrics.NewCounter()
+	co2Counter = metrics.NewCounter()
 )
 
 type animation struct {
@@ -28,6 +31,8 @@ func Draw(toolkit *matrix.LedToolKit) {
 	if err != nil {
 		log.Println("An error occurred while player meter animation: " + err.Error())
 	}
+	metrics.GetOrRegister("widget-co2.temperature", temperatureCounter)
+	metrics.GetOrRegister("widget-co2.co2", co2Counter)
 }
 
 func (animation *animation) Next() (image.Image, <-chan time.Time, error) {
@@ -69,6 +74,9 @@ func Measure() {
 				log.Printf("CO2 Meter returned error: '%v'", err)
 			}
 			CurrentMeasurement = result
+
+			temperatureCounter.Inc(int64(result.Temperature))
+			co2Counter.Inc(int64(result.Co2))
 		}
 	}
 }

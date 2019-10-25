@@ -5,8 +5,12 @@ package matrix
 import (
 	"encoding/json"
 	"github.com/aurisl/ledmatrix/command"
+	"github.com/rcrowley/go-metrics"
 	"image/color"
+	"log"
+	"os"
 	"sync"
+	"time"
 )
 
 type Emulator struct {
@@ -31,6 +35,9 @@ func NewEmulator(w, h int, renderCallback func(pixelMap []byte)) *Emulator {
 	}
 
 	emulator.LEDs = make([]color.Color, emulator.Width*emulator.Height)
+
+	//Prints metrics data to Stdout
+	go metrics.Log(metrics.DefaultRegistry, 5 * time.Second, log.New(os.Stderr, "Metrics: ", log.Ldate | log.Ltime))
 
 	return emulator
 }

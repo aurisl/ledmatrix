@@ -3,8 +3,10 @@
 package matrix
 
 import (
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"github.com/aurisl/ledmatrix/error"
+	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	"github.com/deathowl/go-metrics-prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 var Renderer = CreateHardwareMatrix()
@@ -14,6 +16,11 @@ func CreateHardwareMatrix() Matrix {
 
 	matrix, err := rgbmatrix.NewRGBLedMatrix(matrixConfig)
 	error.Fatal(err)
+
+	prometheusRegistry := prometheus.NewRegistry()
+	metricsRegistry := metrics.NewRegistry()
+	pClient := NewPrometheusProvider(metricsRegistry, "led-matrix", "subsys", prometheusRegistry, 1*time.Second)
+	go pClient.UpdatePrometheusMetrics()
 
 	return matrix
 }

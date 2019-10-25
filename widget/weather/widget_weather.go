@@ -154,7 +154,6 @@ func drawWeatherInformation(animation *animation) {
 			if err != nil {
 				log.Println("An error occurred while writing open api weather icon" + err.Error())
 			}
-
 		} else {
 			img, _, _ = image.Decode(iconFile)
 		}

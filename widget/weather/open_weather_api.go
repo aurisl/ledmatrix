@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/aurisl/ledmatrix/config"
+	"github.com/rcrowley/go-metrics"
 	"image"
 	"io"
 	"io/ioutil"
@@ -12,6 +13,10 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+)
+
+var (
+	updateWeather = metrics.NewCounter()
 )
 
 type (
@@ -53,6 +58,7 @@ var (
 )
 
 func NewWeather() *Weather {
+	metrics.GetOrRegister("widget-weather.update", updateWeather)
 	return &Weather{}
 }
 
@@ -156,6 +162,7 @@ func (w *Weather) persistCurrentWeatherData(weatherFileLocation string) {
 	jsonData, _ := json.Marshal(w)
 	err := ioutil.WriteFile(weatherFileLocation, jsonData, 0644)
 	log.Printf("Writing weather data to '%s'. \n", weatherFileLocation)
+	updateWeather.Inc(1)
 	if err != nil {
 		panic("Failed to write weather data: " + err.Error())
 		return
